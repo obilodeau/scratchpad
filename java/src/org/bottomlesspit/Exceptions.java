@@ -1,48 +1,38 @@
 package org.bottomlesspit;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.io.UnsupportedEncodingException;
-
 public class Exceptions {
 
 
-	final static char[] buffer = new char[0x1000];
+	/**
+	 * doingSomethingExceptional
+	 * 
+	 * haha not really ;)
+	 * @throws Exception 
+	 */
+	static public String doingSomethingExceptional() throws Exception {
+		throw new Exception("exceptional");
+	}
 	
 	/**
-	 * haha not really ;)
-	 * @throws IOException 
+	 * doingSomethingExceptionalAtRunTime
+	 * 
+	 * @throws RuntimeException 
 	 */
-	static public String doingSomethingExceptional(String file) throws IOException {
-		StringBuilder out = new StringBuilder();
-		
-		int read;
-		Reader reader = new InputStreamReader(new FileInputStream(file), "UTF-8");
-		
-		do {
-		  read = reader.read(buffer, 0, buffer.length);
-		  if (read > 0) {
-		    out.append(buffer, 0, read);
-		  }
-		}
-		while (read >= 0);
-		
-		reader.close();
-		return out.toString();
+	static public String doingSomethingExceptionalAtRunTime(){
+		throw new RuntimeException("exceptional while running");
 	}
+
 	
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
 
+		System.out.println("Doing exceptional stuff today! First, a checked exception:");
+		// compiler forces me to try-catch
 		try {
-			System.out.println(doingSomethingExceptional("expecting-exception"));
-		} catch (IOException e) {
+			doingSomethingExceptional();
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			//e.printStackTrace();
 			System.out.println(e.getClass().toString());
@@ -50,6 +40,16 @@ public class Exceptions {
 			System.out.println(e.getClass().getName());
 			System.out.println(e.getClass().getSimpleName());
 		}
+
+		System.out.println("\nThen a catching an unchecked exception:");
+		try {
+			doingSomethingExceptionalAtRunTime();
+		} catch (Exception e) {
+			System.out.println(e.getClass().getName());			
+		}
+
+		System.out.println("\nThen we hit a unchecked exception at runtime:");
+		doingSomethingExceptionalAtRunTime();
 	}
 
 }
