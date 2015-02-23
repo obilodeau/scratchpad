@@ -1,0 +1,38 @@
+= GDB Assembler cheatsheet
+
+== useful plugins / configs
+
+* gdbinit: https://github.com/gdbinit/Gdbinit
+
+== commands
+
+disass: disassemble
+si: step instruction
+ni: next instruction (step over)
+finish: return from call
+disass: disassemble
+si: step instruction
+ni: next instruction (step over)
+finish: return from call
+
+print $eflags: get flags
+info registers: registers information
+
+== x86 FLAGS registers
+
+CF	Carry flag
+PF	Parity flag
+0	Reserved
+AF	Adjust flag
+0	Reserved
+ZF	Zero flag
+SF	Sign flag
+TF	Trap flag (single step)
+IF	Interrupt enable flag
+DF	Direction flag
+OF	Overflow flag
+
+== some refs:
+
+* http://www.technochakra.com/gdb-assembly-language-debugging-101/
+* http://en.wikipedia.org/wiki/FLAGS_register

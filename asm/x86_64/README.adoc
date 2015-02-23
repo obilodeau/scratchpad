@@ -1,0 +1,14 @@
+= x86_64 assembly
+
+Call convention: rdi, rsi, rdx, rcx, r8, r9, then pushing the rest on the
+stack in reverse order.
+
+Non-volatile registers: rbx, rsp, rbp, and r12-r15. Saved across calls.
+
+Learn from GCC with `gcc -S` which output the assembly
+
+== References
+
+Started off by reading
+http://nickdesaulniers.github.io/blog/2014/04/18/lets-write-some-x86-64/ but
+then modifying his stuff a bit to make it work on linux.
