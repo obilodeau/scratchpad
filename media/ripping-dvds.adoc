@@ -1,0 +1,13 @@
+= Riping DVDs
+
+In order to backup DVDs I own, I had to install all the usual stuff but
+something I missed this time and that took me a while to figure out is:
+
+* install regionset
+* set region to 1 on current drive (had never been set)
+* *then* remove ~/.dvdcss/ otherwise output is garbled and it is strange
+* then the thing started working in vlc and handbrake
+
+== References
+
+* http://askubuntu.com/questions/185587/why-does-dvd-playback-still-not-work-after-installing-libdvdcss2

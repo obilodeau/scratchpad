@@ -1,0 +1,7 @@
+= Transcoding
+
+or better yet, extracting!
+
+== mp3 out of an flv
+
+ffmpeg -i Input.flv -f mp3 -vn -acodec copy Output.mp3
