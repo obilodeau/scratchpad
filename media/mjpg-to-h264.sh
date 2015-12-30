@@ -62,8 +62,14 @@ for FILE in `exiftool -r -if '$Compression =~ /MJPG/i' -filename $DIR  | grep -v
 
 	# second pass
 	echo "# File $FILE: Second pass encoding"
+	# Don't convert audio to mp3 on low sample rates
+	if [ `exiftool -s3 -BitsPerSample "$FILE"` == 8 ]; then
+		AC=copy
+	else
+		AC=$AUDIO_CODEC
+	fi
 	cd /tmp
-	mencoder "$FILE" -ovc x264 -x264encopts pass=2:bitrate=$BITRATE$X264_OPTS -oac $AUDIO_CODEC -o "$FILE.tmp"
+	mencoder "$FILE" -ovc x264 -x264encopts pass=2:bitrate=$BITRATE$X264_OPTS -oac $AC -o "$FILE.tmp"
 	if [ $? -ne 0 ]; then
 		echo "Something went wrong with file: $FILE, bailing out"
 		exit
