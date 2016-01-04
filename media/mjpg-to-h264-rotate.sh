@@ -28,13 +28,8 @@
 # NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 # ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
-# TODO: support automatic rotation of videos
 
-DIR=$1
-
-# change IFS to newline to handle special file names in for loop
-OLDIFS=$IFS
-IFS=$'\n'
+FILE=$1
 
 # Quality
 BITRATE=2000 # good for 720x480 30 fps interlaced, 640x480 30 fps
@@ -42,8 +37,7 @@ BITRATE=2000 # good for 720x480 30 fps interlaced, 640x480 30 fps
 
 # Video filter
 # to rotate right: rotate=1, rotate left: rotate=3, scale: scale=320:240
-#VIDEO_FILTER="-vf rotate=1"
-VIDEO_FILTER=""
+VIDEO_FILTER="-vf rotate=1"
 
 # additional x264enc options
 X264_OPTS=
@@ -54,40 +48,32 @@ X264_OPTS=
 # transcoding into mp3lame
 AUDIO_CODEC=mp3lame
 
-for FILE in `exiftool -r -if '$Compression =~ /MJPG/i' -filename $DIR  | grep -v ".orig$" | grep "^======== " | sed 's/^======== //'`; do
+# first pass
+echo "# File $FILE: First pass encoding"
+mencoder "$FILE" $VIDEOFILTER -ovc x264 -x264encopts pass=1:bitrate=$BITRATE$X264_OPTS -nosound -o /dev/null
+if [ $? -ne  0 ]; then
+	echo "Something went wrong with file: $FILE, bailing out"
+	exit
+fi
 
-	# first pass
-	echo "# File $FILE: First pass encoding"
-	cd /tmp
-	mencoder "$FILE" $VIDEOFILTER -ovc x264 -x264encopts pass=1:bitrate=$BITRATE$X264_OPTS -nosound -o /dev/null
-	if [ $? -ne  0 ]; then
-		echo "Something went wrong with file: $FILE, bailing out"
-		exit
-	fi
+# second pass
+echo "# File $FILE: Second pass encoding"
+# Don't convert audio to mp3 on low sample rates
+if [ `exiftool -s3 -BitsPerSample "$FILE"` == 8 ]; then
+	AC=copy
+else
+	AC=$AUDIO_CODEC
+fi
+mencoder "$FILE" $VIDEOFILTER -ovc x264 -x264encopts pass=2:bitrate=$BITRATE$X264_OPTS -oac $AC -o "$FILE.tmp"
+if [ $? -ne 0 ]; then
+	echo "Something went wrong with file: $FILE, bailing out"
+	exit
+fi
 
-	# second pass
-	echo "# File $FILE: Second pass encoding"
-	# Don't convert audio to mp3 on low sample rates
-	if [ `exiftool -s3 -BitsPerSample "$FILE"` == 8 ]; then
-		AC=copy
-	else
-		AC=$AUDIO_CODEC
-	fi
-	cd /tmp
-	mencoder "$FILE" $VIDEOFILTER -ovc x264 -x264encopts pass=2:bitrate=$BITRATE$X264_OPTS -oac $AC -o "$FILE.tmp"
-	if [ $? -ne 0 ]; then
-		echo "Something went wrong with file: $FILE, bailing out"
-		exit
-	fi
+# renaming files and removing temp files
+echo "# File $FILE: Renaming and cleaning-up"
+rm divx2pass.log
+rm divx2pass.log.mbtree
 
-	# renaming files and removing temp files
-	echo "# File $FILE: Renaming and cleaning-up"
-	rm /tmp/divx2pass.log
-	rm /tmp/divx2pass.log.mbtree
-
-	mv "$FILE" "$FILE.orig"
-	mv "$FILE.tmp" "$FILE"
-
-IFS=$OLDIFS
-
-done
+mv "$FILE" "$FILE.orig"
+mv "$FILE.tmp" "$FILE"
