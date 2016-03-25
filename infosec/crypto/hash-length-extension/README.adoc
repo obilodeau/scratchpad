@@ -1,0 +1,56 @@
+= Hash length extension attacks
+
+Montrehack March 21st 2016
+
+== Challenge
+
+Parlour PlaidCTF 2014
+
+=== Challenge facts
+
+Must have 0
+
+    result = int(md5(self.nonce + self.user_nonces[-1]).hexdigest(),16)&((2<<(self.odds-1))-1)
+
+* Faut que le hash & odds == 0
+* odds donne `2**input - 1`
+* nonce is 16 bytes
+* user_nonce max length 1024
+
+* large odds leak information about the resulting hash
+* but missing 2 bytes
+
+=== Getting there
+
+If we keep hash material smaller than 1 block:
+
+    block_1 = nonce + usernonce + padding
+    hash_final = md5_compress(initial_state, block_1)
+
+and we get 112 bits out of final_hash from the server. We are missing 16 bits
+from being able to predict the state out of the first block.
+
+If we play with usernonce, in block 1 we don't get any leakage of information.
+The whole hash would change and we would gain nothing.
+
+If we extend the hash (via usernonce) we can try to bruteforce the two bytes
+(missing 16 bits) and compare final hash. If we get a match from server we
+know we bruteforced the bytes properly.
+
+    user input = 'a' + fake padding + 'b' + real padding
+                                      ^ will go in block 2
+
+    block_1 = nonce + 'a' + fake padding
+    state = md5_compress(initial_state, block_1)
+
+    block_2 = 'b' + real padding
+    hash_final = md5_compress(state, block_2)
+
+To solve the real challenge since we can't reuse a nonce we will have to swap
+b by a counter of some sort.
+
+== References
+
+* Olivier Arteau's slides:
+  http://slides.com/olivierarteau/hash-length-extension-8
+* https://blog.skullsecurity.org/2012/everything-you-need-to-know-about-hash-length-extension-attacks
