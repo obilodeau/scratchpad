@@ -1,0 +1,48 @@
+= Vagrant
+
+Manage VMs from CLI
+
+== Quickly spin a Linux VM in my libvirt env
+
+This is a CentOS 5 example. You can take another box.
+
+    $ vagrant mutate http://yum.mnxsolutions.com/vagrant/centos_56_32.box libvirt
+    $ vagrant init centos_56_32
+
+Then add this in the body of the Vagrantfile
+
+  config.vm.define :centos5 do |centos5|
+    centos5.vm.box = "centos_56_32"
+  end
+
+  # libvirt config
+  config.vm.provider :libvirt do |libvirt|
+    libvirt.connect_via_ssh = false
+    libvirt.storage_pool_name = "olivier"
+    libvirt.host = nil
+    libvirt.memory = 2048
+    libvirt.cpus = 2
+  end
+
+Finally:
+
+  $ vagrant up
+  $ vagrant ssh
+
+== Commands
+
+vagrant up --provider=libvirt
+vagrant rsync-auto
+vagrant ssh
+
+vagrant suspend / resume
+vagrant halt / up
+
+vagrant destroy
+
+== Cool plugins
+
+Speed up `vagrant up` with package cache
+
+    $ vagrant plugin install vagrant-cachier
+

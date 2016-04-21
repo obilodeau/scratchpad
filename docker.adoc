@@ -1,0 +1,62 @@
+= Docker
+
+== Run a docker image
+
+    docker run -t -i k0st/cowrie /bin/bash
+
+== Modify an existing image and run it
+
+Useful to debug buggy images
+
+    git clone git@github.com:kost/docker-cowrie.git
+    cd docker-cowrie/
+
+Modify Dockerfile or other things. Below format is user/imagename and path to
+Dockerfile.
+
+    docker build -t olivier/cowrie .
+
+Run it
+
+    docker run -t -i olivier/cowrie /bin/sh
+
+== Outside access
+
+EXPOSE is for inter-container per-port access. run -p exposes ports to the
+outside world.
+
+For example a VM that provides access to 2222 via `EXPOSE 2222` needs to be
+started with `-p 2222` in order for that service to be accessible from the
+host.
+
+== Cleanup
+
+Removing all containers
+
+    docker rm $(docker ps -aq)
+
+Removing images
+
+    docker rmi <image-name>
+
+== Images
+
+    docker images
+
+== Moving images around
+
+Tag an image (helps identify it)
+
+    docker tag gosecure/cowrie cowrie-router-actiontec
+
+Save it
+
+    docker save cowrie-router-actiontec > cowrie-router-actiontec-v20160209.tar
+
+Copy it (the way you want)
+
+Load it
+
+    zcat cowrie-router-actiontec-v20160209.tar.gz | docker load
+
+Run it
