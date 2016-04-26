@@ -4,7 +4,7 @@ scratchpad
 Stuff I quickly write to validate or recall certain language, library or 
 design behavior.
 
-Copyright 2011, 2012 Olivier Bilodeau <olivier@bottomlesspit.org>
+Copyright 2011-2016 Olivier Bilodeau <olivier@bottomlesspit.org>
 
 Why?
 ----
