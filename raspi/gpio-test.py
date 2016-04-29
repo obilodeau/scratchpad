@@ -21,7 +21,7 @@ GPIO.output(gled, 0)
 
 # Input test
 while True:
-    if GPIO.input(gbutton) == False:
+    if GPIO.input(gbutton) == GPIO.LOW:
         print("Green button pressed")
         break
 
