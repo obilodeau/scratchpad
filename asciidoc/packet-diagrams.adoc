@@ -1,0 +1,14 @@
+= Packet Diagrams
+
+== Something like this
+
+NOTE: FIXME
+
+[cols="33", halign="center"]
+|====
+10+<|0          10+<|1              10+<|2               2+<|3|
+|0|1|2|3|4|5|6|7|8|9|0|1|2|3|4|5|6|7|8|9|0|1|2|3|4|5|6|7|8|9|0|1|
+2+|V=2 |P|X 4+|CC|M 7+|PT 16+|sequence number                      |RTP
+32+|timestamp                                                      |Header
+32+|synchronization source (SSRC) identifier |
+|===

@@ -1,0 +1,15 @@
+= AsciiDoc things
+
+== Workflow
+
+=== Diff asciidoc source
+
+Generate a colorized patch of changes in HTML:
+
+    wdiff file-1.1 file-1.2 | colordiff | ~/src/ansifilter/src/ansifilter -H > 1.1-to-1.2.html
+
+or
+
+    git diff --color-words draft-1.1 | ~/src/ansifilter/src/ansifilter -H > 1.1-to-1.2.html
+
+or vimdiff with :TOhtml (set background=light and colorscheme default first)
