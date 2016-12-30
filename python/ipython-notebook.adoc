@@ -1,0 +1,61 @@
+= IPython Notebook cheatsheet
+
+== Shell execution
+
+You can use `!` to execute shell commands just like in classic ipython.
+
+It also work to assign to lists
+
+    files = !ls
+
+== Variables in shell
+
+    file = "somefile"
+    !ls {somefile}
+
+== Parallelize
+
+Setup
+
+    # ipython parallel setup
+    # http://minrk.github.io/scipy-tutorial-2011/
+    # started 'default' cluster with 10 engines
+    from IPython import parallel as p
+    rc = p.Client()
+
+Do stuff
+
+    # list engine ids
+    #rc.ids
+
+    # grab a direct view on all engines
+    dview = rc[::]
+
+    # import stuff
+    # or the @require() decorator is also a possibility
+    with dview.sync_imports():
+        import os
+
+    # straight apply function, blocking
+    #dview.block = True
+    #dview.apply(lambda: os.getpid())
+
+    # fancier way with remote decorator
+    #@dview.remote(block=True)
+    #def getpid():
+    #    return os.getpid()
+    #
+    #getpid()
+
+    # a more meaningful example
+    def list_files(country):
+        files = !ls /srv/files/{country}/
+        return files
+
+    dview.block = True
+    dview.map(list_files, ['canada', 'usa'])
+
+=== References
+
+* http://stackoverflow.com/questions/24312284/ipython-notebook-how-to-parallelize-external-script
+* http://minrk.github.io/scipy-tutorial-2011/
