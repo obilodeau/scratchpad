@@ -1,0 +1,136 @@
+= Hard drive recovery
+
+Used to be a big fan of Spinrite but it's just too slow now. Looking for
+advice, I found these tips:
+
+== Recovery
+
+* Copy everything you can while it works with ddrescue
+* Run one or several badblocks passes with -n (non-destructive read/write)
+
+There is even an option that will run subsequent passes until no *new*
+bad block or sector is found.
+
+* Run a filesystem checking tool and have it check for badblocks again (or use
+  a logfile of your last check)
+
+See http://superuser.com/questions/528176/using-badblocks-on-modern-disks[this
+answer] to know how to run `badblocks`
+
+=== Read test and keep log
+
+On a 512 bytes sector-sized disk
+
+    badblocks -b 512 -c 256 -o backblocks-readtest.log -s -v /dev/sdc
+
+I think `-c` value could have been higher.
+
+After consider using `-n` for a non-destructive read-write mode.
+
+== ddrescue operation
+
+First pass:
+
+    ddrescue -v --sector-size=4096 --sparse --no-scrape /dev/... file mapfile
+
+Second pass:
+
+    ddrescue -v --sector-size=4096 --sparse --idirect --retry-passes=3 /dev/... file mapfile
+
+-b // --sector-size:: make sure to get this right!
+
+-n // --no-scrape:: Skip the scraping phase. Avoids spending a lot of time trying to
+rescue the most difficult parts of the file. Useful for a first quick pass.
+
+--idirect:: Use direct I/O for input. Recommended by ddrescue tutorial. -b must be the
+good value otherwise reads will fail.
+
+== Attempt to mount drive in Windows
+
+Use ImDisk Toolkit or OSFMount. Click on mapped drive letter to try to run `chkdsk.exe` on
+it.
+
+== Attempt to mount drive in Linux
+
+Find offset where partition starts.
+
+    parted <image>
+
+    GNU Parted 2.3
+    Using picked.img
+    Welcome to GNU Parted! Type 'help' to view a list of commands.
+    (parted) unit
+    Unit?  [compact]? B
+    (parted) print
+
+If `parted` doesn't work, use `fdisk` or `gdisk` (GPT partition tables) and
+multiply start sector with the sector size (usually 512 or 4096)
+
+Mount using offset of partition you are interested in:
+
+    mount -o loop,offset=XXXX <image> <mountpoint>
+
+On some distros loop files are not automatically created. Follow instructions
+from search for partition section. Then replace `<image>` with `/dev/loop0`.
+
+=== From ext2/3/4 filesystem
+
+Paragos Software ExtFS for Windows (there's a free version). However note that
+GPT partitionned hard drives won't work on Windows XP.
+
+=== References
+
+* http://reboot.pro/files/file/284-imdisk-toolkit/
+* http://www.osforensics.com/tools/mount-disk-images.html
+* http://www.paragon-software.com/home/extfs-windows-pro/
+
+== Search for partitions and filesystems
+
+=== Simple
+
+Mount image as loopback device and check with cfdisk:
+
+    losetup -f --show <image>
+
+Will output created loopback device then:
+
+    cfdisk <lo-device>
+
+When done:
+
+    losetup -d <lo-device>
+
+=== Advanced
+
+    testdisk /log <image>.dd
+
+Quick search then deep search.
+
+=== References
+
+* http://www.cgsecurity.org/wiki/TestDisk_Step_By_Step
+
+== Testing a disk
+
+Figure out block size
+
+    lsblk -o NAME,PHY-SeC
+
+Run `badblocks` in destructive read-write mode (way faster than
+non-destructive)
+
+    badblocks -b 512 -c 256 -w -s -v <dev>
+
+== Reusing bad drives
+
+Make sure that the filesystem is aware of the bad blocks on it. See
+`badblocks` on how to do that.
+
+== References
+
+* http://superuser.com/questions/528176/using-badblocks-on-modern-disks
+* http://superuser.com/questions/240641/how-long-does-badblocks-take-on-a-1tb-drive
+* http://serverfault.com/questions/51681/does-spinrite-do-what-it-claims-to-do
+* https://www.smartmontools.org/browser/trunk/www/badblockhowto.xml
+* http://www.gnu.org/software/ddrescue/manual/ddrescue_manual.html#Invoking-ddrescue
+* http://unix.stackexchange.com/questions/39113/mount-ntfs-image-file-created-using-partimage
