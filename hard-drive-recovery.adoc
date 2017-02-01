@@ -1,4 +1,5 @@
 = Hard drive recovery
+:toc:
 
 Used to be a big fan of Spinrite but it's just too slow now. Looking for
 advice, I found these tips:
@@ -45,12 +46,41 @@ rescue the most difficult parts of the file. Useful for a first quick pass.
 --idirect:: Use direct I/O for input. Recommended by ddrescue tutorial. -b must be the
 good value otherwise reads will fail.
 
-== Attempt to mount drive in Windows
+=== Special case: ddrescue over the network
+
+I used sshfs + ddrescue with a reasonable 10MiB/s rate using a 100Mbps network
+and slow machines.
+
+* I didn't use ddrescue's `--sparse` option because I was afraid it wouldn't
+  work over a FUSE filesystem
+* sshfs option `-o big_writes`
+
+So basically:
+
+    sshfs <host>:<directory> <mountpoint> -o big_writes
+
+Further optimization is possible. I haven't tried other sshfs options.
+
+== Look at the rescued data
+
+=== Attempt to mount drive in Windows
 
 Use ImDisk Toolkit or OSFMount. Click on mapped drive letter to try to run `chkdsk.exe` on
 it.
 
-== Attempt to mount drive in Linux
+==== From ext2/3/4 filesystem
+
+Paragos Software ExtFS for Windows (there's a free version). However note that
+GPT partitionned hard drives won't work on Windows XP.
+
+==== References
+
+* http://reboot.pro/files/file/284-imdisk-toolkit/
+* http://www.osforensics.com/tools/mount-disk-images.html
+* http://www.paragon-software.com/home/extfs-windows-pro/
+
+
+=== Attempt to mount drive in Linux
 
 Find offset where partition starts.
 
@@ -73,20 +103,10 @@ Mount using offset of partition you are interested in:
 On some distros loop files are not automatically created. Follow instructions
 from search for partition section. Then replace `<image>` with `/dev/loop0`.
 
-=== From ext2/3/4 filesystem
 
-Paragos Software ExtFS for Windows (there's a free version). However note that
-GPT partitionned hard drives won't work on Windows XP.
+=== Search for partitions and filesystems
 
-=== References
-
-* http://reboot.pro/files/file/284-imdisk-toolkit/
-* http://www.osforensics.com/tools/mount-disk-images.html
-* http://www.paragon-software.com/home/extfs-windows-pro/
-
-== Search for partitions and filesystems
-
-=== Simple
+==== Simple
 
 Mount image as loopback device and check with cfdisk:
 
@@ -100,15 +120,16 @@ When done:
 
     losetup -d <lo-device>
 
-=== Advanced
+==== Advanced
 
     testdisk /log <image>.dd
 
 Quick search then deep search.
 
-=== References
+==== References
 
 * http://www.cgsecurity.org/wiki/TestDisk_Step_By_Step
+
 
 == Testing a disk
 
