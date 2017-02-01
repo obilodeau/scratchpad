@@ -4,19 +4,19 @@ scratchpad
 Stuff I quickly write to validate or recall certain language, library or 
 design behavior.
 
-Copyright 2011-2016 Olivier Bilodeau <olivier@bottomlesspit.org>
+Copyright 2011-2017 Olivier Bilodeau <olivier@bottomlesspit.org>
 
 Why?
 ----
 
-Someone once told me that it is often quicker to write a simple program to 
-validate some behavior than to debug or print a bigger program to exhibit 
-the behavior. I really liked the advice, especially applied to a princess 
-(high-maintenance) language like Perl or for stuff I don't do often (like
-regexp in bash).
+Someone once told me that it is often quicker to write a simple program to
+validate some behavior than to debug or add print statements to a bigger
+program to exhibit the behavior. I really liked the advice, especially applied
+to a princess (high-maintenance) language like Perl or for stuff I don't do
+often (like regexp in bash or hard-drive recovery).
 
-Since then I've been writting stupidly simple snippets and keeping them around
-because from time to time I get back to them or expand them.
+Since then I've been writting simple snippets and keeping them around because
+from time to time I get back to them or, in some cases, expand them.
 
 Author
 ------
