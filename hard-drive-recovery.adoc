@@ -61,6 +61,38 @@ So basically:
 
 Further optimization is possible. I haven't tried other sshfs options.
 
+=== Hardware issues
+
+If BIOS doesn't detect the drive or the motor doesn't spin, it doesn't look
+good. Rubber hammer freezer trick.
+
+If BIOS does detect the drive but all reads result in errors that are logged
+in syslog and ddrescue generates only errors then finding an exact PCB of the
+drive and swaping it might work. It worked for me once.
+
+If BIOS detects the drive but the OS has trouble reading it. Try Direct I/O
+(`-d`) and smaller cluster size (ex: `-c 16`).
+
+=== SATA Reset
+
+Sometimes the kernel or the drive will be put in a bad state that will result
+in all subsequent reads yielding errors. A reset of the drive might fix it. It
+worked for me once and significantly improved the reliability of the drive at
+recovering the remaining of the data.
+
+Replace `X` with the problematic drive letter:
+
+    echo 1 > /sys/block/sdX/device/delete
+
+Find host to initiate re-scan (locally it's host0):
+
+    echo "- - -" > /sys/class/scsi_host/host0/scan
+
+Monitor `dmesg` or your syslog while doing so.
+
+Ref: http://www.zedt.eu/tech/linux/soft-resetting-sata-devices-linux/
+
+
 == Look at the rescued data
 
 === Attempt to mount drive in Windows
