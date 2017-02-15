@@ -37,8 +37,8 @@ OLDIFS=$IFS
 IFS=$'\n'
 
 # Quality
-BITRATE=2000 # good for 720x480 30 fps interlaced, 640x480 30 fps
-#BITRATE=50 # was good for 320x200 30 fps (but probably wrong.. old mencoder bug/feature maybe?)
+#BITRATE=2000 # good for 720x480 30 fps interlaced, 640x480 30 fps
+BITRATE=576 # good for 320x200 15 fps, maybe even a bit high
 
 # Video filter
 # to rotate right: rotate=1, rotate left: rotate=3, scale: scale=320:240
