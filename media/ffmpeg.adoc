@@ -1,0 +1,19 @@
+= ffmpeg
+
+== Speeding up or slowing down a video
+
+* Double the speed
+
+    ffmpeg -i input.mkv -filter:v "setpts=0.5*PTS" output.mkv
+
+* Avoid frame drops by using a higher framerate (here it's 4x w/ -r 16)
+
+    ffmpeg -i input.mkv -r 16 -filter:v "setpts=0.25*PTS" output.mkv
+
+* Slow down video (2x)
+
+    ffmpeg -i input.mkv -filter:v "setpts=2.0*PTS" output.mkv
+
+== References
+
+* https://trac.ffmpeg.org/wiki/How%20to%20speed%20up%20/%20slow%20down%20a%20video
