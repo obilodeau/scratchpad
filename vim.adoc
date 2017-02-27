@@ -1,0 +1,16 @@
+= Vim
+
+I use vim so much that I should be ashamed to have only this as notes...
+
+vimdiff's :TOhtml (see :h :TOhtml)
+
+hex:
+
+* convert to hex: :%!xxd
+* convert back :%!xxd -r
+
+== Beginners
+
+* vimtutor
+* The stack overflow movement keys explanation I have bookmarked in my
+  pinboard

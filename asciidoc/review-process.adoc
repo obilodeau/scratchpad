@@ -1,0 +1,42 @@
+= Review Process for AsciiDoc Documents
+
+== Pending upstream improvements
+
+* :showcomments: https://github.com/asciidoctor/asciidoctor/issues/932
+* CriticMarkup, https://github.com/asciidoctor/asciidoctor/issues/1031
+
+== Fixes
+
+Typos and obviously bad wording should be fixed inplace. One can word-diff
+with git to review what someone else fixed even if there would be white space
+issues.
+
+    git diff --word-diff
+
+== Comments or suggestions
+
+To leverage the asciidoc markup language do your comments with lines
+starting with //.
+
+For example:
+
+....
+operation are usually able to remove other malware components such as
+Linux/Cdorked, but often overlook the OpenSSH backdoor due to the stealthiness
+//                                                                ^ sure about this word?
+//                                                                I don't like it [OB]
+mechanisms used. Thus, it was common for the operators to come back a few
+days
+later and revert the changes made by the administrator.
+// [OB] thinking about it, why don't you remove this whole paragraph?
+....
+
+Longer comments can be made using the block comment markup: ////
+
+== Review branches
+
+Reviews can be done inside branches where all suggestions are committed and
+then the text reworded by the integrator as he accepts or rejects changes and
+modify text according to comments. Then a squash merge of the review branch
+can be done in master branch in order to keep the history tidy.
+
