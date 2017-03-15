@@ -28,3 +28,12 @@ str3 = textwrap.dedent("""\
         Oh and I can
             indent still! :)""")
 print str3
+
+print "\ntextwrap.dedent() with format"
+str4 = textwrap.dedent("""\
+        Some kind of very long message that I want to dedent
+        cleanly:
+
+        {}
+        """).format("<insert format\nstring here>")
+print str4

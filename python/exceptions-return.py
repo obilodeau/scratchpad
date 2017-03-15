@@ -9,8 +9,8 @@ def what_will_it_return():
 
     try:
         print "happily derpin'"
-        #print_throw()
-        #return "try"
+        print_throw()
+        return "try"
 
     except Exception as e:
         print "oh nooes!"
