@@ -1,5 +1,6 @@
-#!/usr/bin/python
+#!/usr/bin/env python2
 
+# Python 2
 #
 # Problem: I'm trying to add context to a generic and unexpected exception while
 #          keeping the original traceback and exception information
