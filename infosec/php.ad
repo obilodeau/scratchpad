@@ -1,0 +1,74 @@
+= PHP
+
+== Pecularities
+
+null-bytes in string are not visible even in var_dump()
+
+== abuse extract()
+
+extract() can be abused to replace variables in the outer scope. Orridding
+arrays work.
+
+An extract on $_POST would allow to overwrite $_SESSION.
+
+Don't put single quotes in POST.
+
+Ex:
+_SESSION[success]=5000&_SESSION[captcha][code]=J6gSGvD
+
+urlencoded:
+
+captcha=J6gSGvD&_SESSION%5Bsuccess%5D=5000&_SESSION%5Bcaptcha%5D%5Bcode%5D=J6gSGvD
+
+== Session files are easy to guess by default
+
+Debian-based: /var/lib/php5/sess_$PHPSESSID
+
+== LFI
+
+For a powerful LFI, inject php code in User-Agent and run LFI on
+`/proc/self/environ%0000`
+
+* http://blog.k3170makan.com/2012/01/lfi-tactics.html
+* malware sample: b3f06f657491505ba799269707c55cbb5851d5df
+
+== PHP Opcache Hunting
+
+GoSecure's tooling + vld (from pecl)
+
+pacman -S php-pear && pecl install vld
+
+    php -dvld.active=1 test.php
+
+Will yield PHP opcodes from a given script
+
+== Type juggling
+
+    "1" == 1
+
+but also
+
+    "0e111111111111111111111111111111" == "0e222222222222222222222222222222"
+
+Which can be abused if you can trick a hash to start with 0e in a comparison
+like:
+
+    if (md5($payload.$this->sess_crypt_key) == $signature)
+
+Ref: https://foxglovesecurity.com/2017/02/07/type-juggling-and-php-object-injection-and-sqli-oh-my/
+
+
+== Deserialization bugs
+
+Write-up about using a class to hide a String object in order to skip a test:
+https://foxglovesecurity.com/2017/02/07/type-juggling-and-php-object-injection-and-sqli-oh-my/
+
+== Weird URIs
+
+php://filter/convert.base64-encode/resource=list
+
+== URL Decoding
+
+parse_url doesn't handle username and passwords correctly
+
+http://what:ever@127.0.0.1:80@33c3ctf.ccc.ac/reeeaally/reallyy/c00l/and_aw3sme_flag

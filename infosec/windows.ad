@@ -1,0 +1,26 @@
+= Windows stuff
+
+how to call a dll from linux
+
+    $ wine rundll32 crackme1.dll,DisplayMessage
+
+== Exploitation
+
+=== ASLR
+
+Once a dll is loaded the randomization is done. Every subsequent load will
+use the same addresses.
+
+=== Remote code injection
+
+* CreateRemoteThread (Win XP, pu dans 7)
+* ntdll.dll's RtlCreateUserThread
+* SetWindowsHook
+* SetWindowLong (ESET's Gapz/PowerLoader, Crowdstrike blog)
+
+== Command line fu
+
+    set foo=bar^&ping -n 1 google.com
+    echo %foo%
+
+This echoes bar but also runs the code.

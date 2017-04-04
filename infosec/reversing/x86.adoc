@@ -1,0 +1,35 @@
+= X86
+
+== Unclear GOT access
+
+This reminds me of x86 32-bit mode  For example, if you look at
+e7ff524f5ae35a16dcbbc8fcf078949fcf8d45b0, you can often find something like
+this:
+
+    LOAD:00004902                 call    sub_60EC
+    LOAD:00004907                 add     ebx, 2879h
+    ..
+    LOAD:00004947                 call    sub_9B4
+
+The first two lines are just a way (compiler generated) to get the address of
+the mentioned Global Offset Table. Then if you look into the sub_9B4
+function, you will find this:
+
+    LOAD:000009B4                 jmp     dword ptr [ebx+10h]
+
+All that the thunk does is returns the address of the next executed
+instruction:
+
+    LOAD:000060EC                 mov     ebx, [esp+0]
+    LOAD:000060EF                 retn
+
+So, 0x4907 + 0x2879 = 0x7180 – Global Offset Table address
+
+This means that the sub_9B4 function jumps to 0x7190, which is here:
+
+    LOAD:00007190                 dd offset strcpy
+
+This only happens to 32-bit files, since x86-64 can use IP-relative addressing
+and IDA understands that (have a look at the 64-bit Roopre files).
+
+Via Michal Malík <michal.malik@eset.sk>.

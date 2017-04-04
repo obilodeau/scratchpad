@@ -1,0 +1,66 @@
+= wireshark
+
+and tshark
+
+== tips
+
+Use wireshark's internal host file for handy IP to name matchup.
+See http://www.appliednsm.com/wireshark-host-files-for-analysis/
+
+== Useful fields
+
+    http.request.full_uri
+    text (contains comma separated http response when gzipped or ssl encrypted)
+    tcp.segment_data (: separated hex encoded)
+    data
+    usb.capdata
+
+NOTE: data is not useful if a higher level dissector kicked in. To do so,
+create a profile with protocols disabled and pass -C <profile> to the
+command-line. Update: there's now a command-line switch to do just that
+
+== dumpcap / tcpdump
+
+dumpcap
+
+    sudo dumpcap -i <interface> -b duration:$((24 * 60 * 60)) -f "port 80" -w sinkhole.pcap
+
+tcpdump
+
+    sudo tcpdump -i <interface> -G $((24 * 60 * 60)) -w sinkhole-%Y-%m-%d-%H-%M.pcap -n -s 0 port 80
+
+Edit the filter accordingly. If you want every packet then make sure to
+filter-out ssh (not port 22).
+
+== Merge captures
+
+It is convenient to keep daily Pcaps (see `-b duration` above) for greater
+manageability and ability to read easily in wireshark. However when batch
+processing you need to avoid creating large temporary files. You can do so
+with:
+
+    mergecap -w- <list of files> | tshark -r- ...
+
+== Tshark protocol hierarchy (and other port metrics)
+
+Protocol hierarchy summary
+
+    -q -z io,phs
+
+TCP port count (on SYN packets)
+
+    -Y "tcp.flags.syn == 1" -T fields -e tcp.dstport | sort | uniq -c | sort -n
+
+UDP port count
+
+    -T fields -e udp.dstport | sort | uniq -c | sort -n
+
+== Tshark conversations
+
+    tshark -r - -q -z conv,tcp -z conv,udp
+
+== Extract names from
+
+* DNS
+* Netbios
+* HTTP host

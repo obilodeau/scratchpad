@@ -1,0 +1,14 @@
+= Steganography
+
+== Tools
+
+I *must* try stegsolve:
+http://www.caesum.com/handbook/Stegsolve.jar
+
+* OpenStego - http://www.openstego.info/
+* OutGuess - http://www.outguess.org/download.php
+* SilentEye - http://www.silenteye.org/download.html
+* Steghide - http://steghide.sourceforge.net/download.php
+* StegFS - http://sourceforge.net/projects/stegfs/
+* pngcheck - http://www.libpng.org/pub/png/apps/pngcheck.html
+* MP3Stego - http://www.petitcolas.net/steganography/mp3stego/

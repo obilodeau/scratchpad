@@ -1,0 +1,30 @@
+= Bro IDS Network Traffic Analysis
+
+Extract all files (builtin plugin)
+
+    bro -r <pcap> frameworks/files/extract-all-files.bro
+
+Eliminate duplicates with `fdupes`
+
+    fdupes -dI .
+
+Traffic summary
+
+    trace-summary -c conn.log
+
+    bro-cut id.resp_p proto service < conn.log | sort | uniq -c | sort -n | tee bro-conn-dst-port-proto-service.log
+
+    bro-cut id.orig_p proto service < conn.log | sort | uniq -c | sort -n | tee bro-conn-src-port-proto-service.log
+
+    bro-cut query name < dns.log | sort | uniq -c | sort -n
+
+    bro-cut method host uri referrer user_agent < http.log | sort | uniq -c | sort -n | tee ../bro-http-method-host-query-useragent.log
+
+
+Look at the weird stuff
+
+    bro-cut name < weird.log | sort | uniq -c | sort -n
+
+Merge pcaps and pass to bro
+
+    mergecap -w- *.pcap | bro -C -r -

@@ -1,0 +1,31 @@
+= Linux/Unix anti-forensic tricks
+
+As witnessed from malware operators.
+
+Best way to wipe a shell session:
+
+    $ HISTFILE=/dev/null
+    $ kill -9 $$
+
+== Logs
+
+=== wtmp and utmp
+
+Perl unpack for wtmp and utmp:
+
+    my $wtmp_unpack = "A8 a32 A4 a32 a256 A8 L A40";
+    my $wtmp_rsize = 384;
+    my ($n1, $tty, $n2, $name, $host, $n3, $time, $n4) = unpack($twtmp, $buf);
+
+Get in there and remove yourself.
+
+=== lastlog
+
+
+Perl unpack for lastlog:
+
+    my $ll_unpack = "L a32 a36 a226";
+    my $ll_rsize = 292;
+    my ($date, $n1, $host, $n2) = unpack($tll, $buf);
+
+Get in there and remove yourself.

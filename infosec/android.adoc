@@ -1,0 +1,34 @@
+= Android
+
+== Extract APK
+
+----
+adb shell pm list packages
+adb shell pm path <packagename>
+adb pull <path>
+----
+
+== Get source code
+
+1. unzip
+2. dex2jar
+3. jd-gui
+
+== Access app data
+
+=== Using android backups
+
+* Android backup extractor: https://github.com/nelenkov/android-backup-extractor
+
+adb backup -f <backup-destination.ab> [-noapk] <package>
+
+in android-backup-extractor:
+
+java -jar build/libs/abe-all.jar unpack <backup.ab> <dest>
+
+then you have a tarball. Hurray!
+
+=== Other references
+
+* http://stackoverflow.com/questions/2078710/android-adb-access-to-application-databases-without-root
+* http://blog.shvetsov.com/2013/02/access-android-app-data-without-root.html

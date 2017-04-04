@@ -1,0 +1,23 @@
+= Unpacking
+
+== the Ollydbg way
+
+* breakpoint on anything memory related (Alt-G then F2)
+
+    VirtualAlloc, HeapCreate, LocalAlloc, VirtualProtect, ...
+
+* Run (F9)
+* Scroll until the end of the allocation function. Add a breakpoint there (F2).
+* Continue (F8)
+* When end of function is reached, right-click on EAX then "Follow in Dump"
+* Add hardware breakpoint (write)
+* Continue (F8)
+* If it breaks on another allocation, add another hw mem breakpoint
+* If it breaks on memory breakpoint check for executable header
+* Repeat last steps as necessary
+* Once you have an MZ / PE header then on section right-click "Backup -> Save
+  data"
+* Run foremost or binwalk on the dump to extract the EXE
+
+Reference:
+http://paulslaboratory.blogspot.ca/2014/04/unpacking-using-ollydbg.html

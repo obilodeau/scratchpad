@@ -1,0 +1,7 @@
+= Embedded stuff
+
+cross-compiling toolchain using Buildroot
+
+== References
+
+http://shadow-file.blogspot.ca/2013/12/emulating-and-debugging-workspace.html

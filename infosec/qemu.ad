@@ -1,0 +1,44 @@
+= QEMU
+
+== Run
+
+    qemu-system-mips -M malta \
+        -kernel ~/Documents/reverse-engineering/mips/vmlinux-3.2.0-4-4kc-malta \
+        -hda debian_wheezy_mips_standard.qcow2 \
+        -append "root=/dev/sda1 console=tty0"
+
+== Cool command line options
+
+* -no-reboot: prevent the issue where qemu restarts even if given a `shutdown
+  -h` from the guest (seen with mips image)
+* -nographic and "console=ttyS0" in -apend: headless qemu with your term
+  converted into a shell for the qemu machine (some arch require ttyAMA0
+  instead)
+
+== Network
+
+WARNING: with magic userland networking, icmp doesn't work
+
+== Bridge stuff
+
+Hook into libvirt with
+
+    -net nic -net bridge,br=virbr2
+
+== Userland stuff
+
+=== Map ports
+
+    -redir tcp:<host port>::<guest port>
+
+== Kernel-level debugging
+
+You can use gdb with low-level hooks into qemu with -s or -S. See:
+http://wiki.qemu.org/Documentation/Debugging
+
+== References
+
+* https://people.debian.org/~aurel32/qemu/mips/
+* http://en.wikibooks.org/wiki/QEMU/Networking#Redirecting_ports
+* http://nairobi-embedded.org/qemu_serial_port_system_console.html
+* http://shadow-file.blogspot.ca/2013/05/running-debian-mips-linux-in-qemu.html

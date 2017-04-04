@@ -1,0 +1,16 @@
+= Reversing glossary
+
+== process hollowing
+
+The act of replacing the code inside a legitimate process with malware code
+before the first thread begins. A hollowed process executes only malicious
+code for the remainder of its lifetime.
+
+=== References:
+
+* The Art of Memory Forensics page 258
+* Analyzing Malware Hollow Process by Eric Monti:
+  http://blog.spiderlabs.com/2011/05/analyzing-malware-hollow-processes.html
+* Debugging Hollow Processes by Alexander Hanel: 
+  http://hooked-on-mnemonics.blogspot.com/2013/01/debugging-hollow-processes.html
+

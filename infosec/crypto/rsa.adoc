@@ -1,0 +1,55 @@
+Weak Key
+
+    Global equation
+
+    m^e mod n = c
+    c^d mod n = m
+
+    Given values:
+    e = 865
+    n = 63083
+
+    Remember:
+    n = p * q (where p, q are distinct primes)
+    phi = (p - 1)(q - 1)
+    d * e == 1 mod (p - 1)(q - 1) or d = e.modInverse(p_1.multiply(q_1))
+
+    // python
+    def egcd(a, b):
+    if a == 0:
+        return (b, 0, 1)
+    else:
+        g, y, x = egcd(b % a, a)
+        return (g, x - (b // a) * y, y)
+
+    def modinv(a, m):
+        g, x, y = egcd(a, m)
+        if g != 1:
+            raise Exception('modular inverse does not exist')
+        else:
+            return x % m
+
+    Factor DB factored n into 199*317
+
+    phi = 198 * 316 = 62568
+    d = e^-1 mod phi = 865^-1 mod 62568
+    d = 217
+
+    Test:
+    e = 865
+    n = 63083
+    d = 217
+    m = 12345
+
+    In [30]: e = 865
+    ...: n = 63083
+    ...: d = 217
+    ...: m = 12345
+    ...:
+
+    In [31]: pow(m, e, n)
+    Out[31]: 60724
+
+    In [32]: pow(60724, d, n)
+    Out[32]: 12345
+

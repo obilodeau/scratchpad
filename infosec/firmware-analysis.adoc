@@ -1,0 +1,56 @@
+= firmware analysis
+
+binwalk (always use latest)
+
+if default run doesn't find anything, -I is useful (but verbose) and then
+--include lzma or filesystems, etc.
+
+ex:
+
+    binwalk -I image.BIN --include lzma
+
+    DECIMAL       HEXADECIMAL     DESCRIPTION
+    --------------------------------------------------------------------------------
+    32            0x20            LZMA compressed data, properties: 0x6E, dictionary size: 0 bytes, uncompressed size: 0 bytes
+    92            0x5C            LZMA compressed data, properties: 0x5D, dictionary size: 16777216 bytes, uncompressed size: 2898643604054482944 bytes
+
+    $ binwalk -e --lzma -o 0x5c image.BIN
+
+    DECIMAL       HEXADECIMAL     DESCRIPTION
+    --------------------------------------------------------------------------------
+    97            0x61            Raw LZMA compression stream, properties: 0x5D [pb: 2, lp: 0, lc: 0], dictionary size: 1048576
+
+http://w00tsec.blogspot.ca/2013/11/unpacking-firmware-images-from-cable.html
+
+sasquatch:: currently the best squashfs extractor
+
+Also rely on `foremost` to extract some of the stuff.
+
+== eCos (or other non ELF formats)
+
+    $ binwalk _image.BIN.extracted/61
+
+    DECIMAL       HEXADECIMAL     DESCRIPTION
+    --------------------------------------------------------------------------------
+    496           0x1F0           eCos kernel exception handler, architecture: MIPS, exception vector table base address: 0x80000300
+    ^C
+
+    $ binwalk -A _image.BIN.extracted/61
+
+    DECIMAL       HEXADECIMAL     DESCRIPTION
+    --------------------------------------------------------------------------------
+    2368          0x940           MIPS instructions, function epilogue
+    2400          0x960           MIPS instructions, function epilogue
+    2448          0x990           MIPS instructions, function epilogue
+    2476          0x9AC           MIPS instructions, function epilogue
+    ...
+
+
+1. Open in IDA
+2. Select MIPS big endian instead of metapc
+3. decompile exception handler address, look for offset
+4. close and restart but set ROM and file offset to offset found above
+
+=== References
+
+* http://reverseengineering.stackexchange.com/questions/6659/windows-ce-itron-rtos-image/6662#6662

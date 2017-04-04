@@ -1,0 +1,11 @@
+= IDA
+
+== Must have plugins
+
+=== Windows
+
+* IDA Scope
+
+=== Scripting
+
+* https://github.com/james91b/ida_ipython

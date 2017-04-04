@@ -1,0 +1,42 @@
+= Linux Exfiltration
+
+== iptables traffic bouncer
+
+Classic bouncer
+
+    iptables -t nat -A PREROUTING -d xx.xx.51.14/32 -p udp -m udp --dport 53 -j DNAT --to-destination xxx.xx.225.200:53
+    iptables -t nat -A POSTROUTING -d xxx.xx.225.200/32 -p udp -m udp --dport 53 -j SNAT --to-source xx.xx.51.14
+
+
+Bounce traffic on port 23 to another host with source NAT to my ISP IP
+
+    iptables -t nat -A PREROUTING -d 192.168.0.11/32 -p tcp -m tcp --dport 23 -j DNAT --to-destination 74.121.245.161:23
+    iptables -t nat -A POSTROUTING -d 74.121.245.161/32 -p tcp -m tcp --dport 23 -j SNAT --to-source 192.222.158.227
+    iptables -t nat -A OUTPUT -d 192.168.0.11/32 -p tcp -m tcp --dport 23 -j DNAT --to-destination 74.121.245.161:23
+
+Helpful debugging
+
+    iptables -t nat -I PREROUTING -d 192.168.0.11/32 -p tcp -m tcp --dport 23 -j LOG --log-ip-options --log-tcp-options
+    iptables -t nat -I POSTROUTING -d 74.121.245.161/32 -p tcp -m tcp --dport 23 -j LOG --log-ip-options --log-tcp-options
+    iptables -I FORWARD -p tcp -m tcp --dport 23 -j LOG --log-ip-options --log-tcp-options
+
+Same but via external server
+
+    iptables -t nat -A PREROUTING -d 192.241.172.135/32 -p tcp -m tcp --dport 23 -j DNAT --to-destination 74.121.245.161:23
+    iptables -t nat -A POSTROUTING -d 74.121.245.161/32 -p tcp -m tcp --dport 23 -j SNAT --to-source 192.241.172.135
+
+    # route the traffic through and don't forget to enable ip_forward
+    iptables -A FORWARD -p tcp -m tcp --dport 23 --destination 74.121.245.161 -j ACCEPT
+    iptables -A FORWARD -p tcp -m tcp --sport 23 -j ACCEPT
+    iptables -P FORWARD DROP
+
+    # optional
+    iptables -t nat -A OUTPUT -d 192.241.172.135/32 -p tcp -m tcp --dport 23 -j DNAT --to-destination 74.121.245.161:23
+
+== netcat bouncer
+
+    # will stop after one forward
+    nc.traditional -l -p 23 -c "nc.traditional 74.121.245.161 23"
+
+    # ncat is better (as usual)
+    sudo ncat -k -l 0.0.0.0 23 -c "ncat 74.121.245.161 23"

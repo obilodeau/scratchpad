@@ -1,0 +1,5 @@
+
+extracting resources from PE files
+
+  wrestool (from icoutils)
+  EXE Explorer (works w/ wine also)

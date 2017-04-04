@@ -1,0 +1,20 @@
+= Snort helpers
+
+== snort rules testing w/ stdout output
+
+Disable output statement and put in this one in:
+
+    output alert_full: stdout
+
+Read pcap:
+
+    sudo snort -c /etc/snort/snort.conf -K none -k none -r ../infected_hosts/91.121.176.44/t2.cap
+
+The `-k none -K none` is to avoid checksum errors since you get these in most
+environments where checksums are done at the hardware level.
+
+Optional: Pass global variables
+
+    -S HOME_NET=91.121.176.0/24
+
+Good doc: http://manual.snort.org/

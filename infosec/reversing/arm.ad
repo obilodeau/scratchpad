@@ -1,0 +1,37 @@
+= ARM
+
+== hard float (armhf) or soft float (armel)
+
+.What do you mean by "soft float ABI" and "hard float ABI"?
+
+ABI stands for application binary interface. The term has slightly different
+meanings in different contexts but in this context it refers to the set of
+rules used to set up registers and the stack when calling and returning from
+functions and other details that are required for binaries to be compatible
+with each other.
+
+The "soft float" ABI passes floating point parameters in integer registers
+while the "hard float ABI" passes them in vfp (floating point) registers. The
+two ABIs are not compatible because they use different registers. It is
+possible to use hardware floating point with the soft-float ABI but doing so
+means that whenever a floating point value is passed to or returned from a
+function it must be transferred to an integer register incurring a performance
+penalty.
+
+From: https://www.raspbian.org/RaspbianFAQ#What_do_you_mean_by_.22soft_float_ABI.22_and_.22hard_float_ABI.22.3F
+
+=== Identify a hard float or soft float binary
+
+    readelf -A <file>
+
+Tag_ABI_VFP_args: VFP registers
+
+or
+
+Tag_ABI_VFP_args: AAPCS (VFP variant)
+
+Means hard float (using vfp registers for faster floating point operations)
+
+== Syscalls
+
+SVC instruction with: http://lxr.free-electrons.com/source/arch/arm/include/uapi/asm/unistd.h

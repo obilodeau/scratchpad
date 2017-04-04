@@ -1,0 +1,8 @@
+= Server-side request forgery (SSRF)
+
+AWS has special IP addresses where you can gather secrets about the server. If
+you can generate SSRF you can exfil these secrets.
+
+== Ref
+
+* https://www.youtube.com/watch?v=P8_V3RI1Ru4 at 44 minutes

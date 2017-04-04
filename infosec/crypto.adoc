@@ -1,0 +1,19 @@
+
+== Maths
+
+* http://en.wikipedia.org/wiki/Modulo_operation#Equivalencies
+
+== Tools
+
+* Cryptool - https://www.cryptool.org/
+* hashpump - https://github.com/bwall/HashPump
+* Sage - http://www.sagemath.org/
+* John the Ripper - http://www.openwall.com/john/
+* xortool - https://github.com/hellman/xortool
+
+== Online tools
+
+* http://www.crypo.com/
+* http://www.cryptool-online.org/
+* http://rumkin.com/tools/cipher/
+* Modules for python - pycrypto - https://www.dlitz.net/software/pycrypto/

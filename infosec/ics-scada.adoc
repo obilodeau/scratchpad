@@ -1,0 +1,32 @@
+= Industrial Control Systems (ICS) and SCADA
+
+== Common Protocols
+
+* Modbus (but not that much really)
+* Siemens S<something>
+* EtherNet/IP (not the Ethernet IT folks think about)
+
+=== Scanning scripts
+
+* https://github.com/digitalbond/Redpoint
+
+=== Modbus
+
+* http://modbuspal.sourceforge.net/
+
+== Things to think about
+
+Scanning embedded devices like these is often enough to make them crash or
+misbehave.
+
+Most software poking the embedded systems is Windows-based.
+
+== Architecture
+
+HMIs poke PLCs which control and monitor the devices over serial lines or
+ethernet.
+
+== Credentials
+
+* https://github.com/scadastrangelove/scadapass
+

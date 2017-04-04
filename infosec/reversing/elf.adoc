@@ -1,0 +1,16 @@
+= ELF
+
+== Section headers vs Program headers
+
+`objdump -D` prints nothing. `objdump -b binary -m i386 -D`
+
+Unfortunately objdump relies on ELF _section_ headers, which are
+meaningless/optional in executables, and ignores program headers.
+
+This naturally leads to a powerful way to hide malicious code from objdump,
+e.g. making a rootkit disassemble as "hello world".
+
+The section headers can even point fake symbol/strings tables separate from
+those used for dynamic linking, to hide system() etc.
+
+ref: https://twitter.com/solardiz/status/610497212456509441

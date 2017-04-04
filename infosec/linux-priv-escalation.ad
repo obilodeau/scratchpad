@@ -1,0 +1,11 @@
+== /bin/mount in sudo
+
+.Trick 1
+
+/bin/mount w/ sudo access can be abused through PATH and leveraging
+fuse.<something> with <something> inside that path. M-E's trick.
+
+.Trick 2
+
+Copy over a loopback filesystem with setuid bash. Mount it and make sure to
+respect permissions.

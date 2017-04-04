@@ -1,0 +1,36 @@
+= ELF fileformat
+
+== quick refs
+
+* https://code.google.com/p/corkami/wiki/ELF101
+* http://www.bottomupcs.com/elf.html
+
+* readelf -a
+* eu-readelf: elf utils' readelf, can understand core dumps better
+* eu-elflint: verify ELF files
+
+== sections / segments
+// Unsure which is which. its confusing
+
+=== .plt
+
+info and code for linker to do its job and populate the got
+
+=== .bss
+
+Holds variables not-initializated or intializated to 0. It's done this way
+because values don't need to be written on in the ELF file but still allocated
+when loaded in memory.
+
+=== .data
+
+Initialized varibles
+
+=== .text
+
+the code
+
+=== .got.plt
+
+After a call to external code has been made. The GOT is populated with address
+of the fct. The .plt above is related to that.

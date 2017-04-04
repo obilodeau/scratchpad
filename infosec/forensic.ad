@@ -1,0 +1,114 @@
+Office files metadata (OLE-based)
+    Structured Storage View, SSView or SSV (works with wine)
+
+== Tools
+
+* scalpel - https://github.com/sleuthkit/scalpel
+* TrID - http://mark0.net/soft-trid-e.html
+* binwalk - http://binwalk.org/
+* foremost - http://foremost.sourceforge.net/
+* Digital Forensics Framework (DFF) - http://www.digital-forensic.org/download/
+* Computer Aided INvestigative Environment (CAINE) Linux forensics live
+  distribution - http://www.caine-live.net/
+* The Sleuth Kit (TSK) - http://www.sleuthkit.org/sleuthkit/download.php
+* photorec: file-carving
+* testdisk - recovery partition tables and recover or recreate filesystem metadata and deleted files
+* dff (hexeditor w/ image previews)
+
+== Linux
+
+=== Filesystem
+
+blkls -s:: slack space. Seen in defcon-quals 2012.
+
+=== Memory
+
+.Process memory information
+* smem
+* pmap
+* /proc/<pid>/maps
+
+.Process memory dumping
+* memfetch (\~/src/)
+* gcore
+
+.Coredump to ELF
+* core2elf, https://bitbucket.org/renorobert/core2elf.git
+* undump, https://code.google.com/p/undump/
+
+=== Full memory acquisition
+
+.Tools
+* fmem
+* LiME (best tool)
+
+==== Perform dump with LiME
+
+* Compile on a different but similar machine
+* Local: `sudo modprobe lime.ko path=/mnt/externaldrive/memdump.lime format=lime`
+* Remote: `sudo modprobe lime.ko path=tcp:4444 format=lime`
+* Remote server: `nc ip 4444 > memdump.lime`
+
+==== Volatility
+
+See _The Art of Memory Forensic_ book.
+
+* linux_dump_map plugin allows you to work with memfetch dumps
+* fetch inodes: `linux_find_file -F filename`
+* dump files: `linux_find_file -i <inode> -O output`
+* process hollowing: `linux_process_hollow`
+* shared library injection: `linux_proc_maps`
+* dumping process: `linux_procdump`
+* dumping libraries: `linux_librarydump`
+* process environment: `linux_psenv`
+* GOT/PLT hooking: `linux_plthook`
+* kernel netfilter hooks: `linux_netfilter`
+* kernel threads don't have environment variables
+
+=== Live system
+
+.Finding a deleted binary
+Symlink under `/proc/$PID/exe` will magically become the target (and oddly
+enough retain the link).
+
+.Accessing files referenced by file descriptors
+See `/proc/$PID/fd/`. Deleted files will be magically available.
+
+.ls magic
+
+    Following the permission bits is a single character that specifies
+    whether an alternate access method applies to the file.  When that
+    character is a space, there is no alternate access method.  When it
+    is a printing character (e.g., `+'), then there is such a method.
+
+or I think it can be POSIX ACLs and they can be listed with getfacl <file>
+
+Filesystem
+
+    You can learn a file's inode number and the number of links to it by running ‘ls -li’ or ‘find -ls’.
+
+via http://www.gnu.org/software/findutils/manual/html_node/find_html/Hard-Links.html
+
+ls -lia (long, inode and all)
+
+find <path> -xdev -inum <inode>
+
+think about lsetxattr also
+
+.POSIX filesystem ACLs
+
+* getfacl
+* setfacl
+
+.User rights
+
+`sudo -l`:: list user sudo rights
+
+.Capabilities
+
+* getcap <file>
+
+.Special logs
+
+lastlog, wtmp and utmp can be accessed for login information through `w`,
+`who` and `last` commands.

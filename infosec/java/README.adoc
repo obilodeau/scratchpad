@@ -1,0 +1,21 @@
+= Java
+
+== Extract strings from memory
+
+Extract strings (like credit cards or secrets) from a running JVM
+
+Dump heap (hprof) of target process using jmap
+
+    jmap -J-d64 -dump:format=b,file=cheap.bin <pid>
+
+Load hprof file from VisualVM
+
+Go in OQL console
+
+Run query:
+
+    select s from java.lang.String s where s.toString().contains("FLAG")
+
+=== References
+
+* http://stackoverflow.com/questions/407612/how-to-get-a-thread-and-heap-dump-of-a-java-process-on-windows-thats-not-runnin

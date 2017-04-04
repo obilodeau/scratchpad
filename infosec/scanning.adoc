@@ -1,0 +1,5 @@
+= Scanning
+
+== Socks 4 proxy fingerprinting
+
+    connect-proxy -d -4 -S host:port perdu.com 80

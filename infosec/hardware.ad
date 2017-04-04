@@ -1,0 +1,28 @@
+== Serial port stuff
+
+1/ trouver le ground
+2/ s'assurer que ya du 3.3 V sur toutes les pins
+3/ bruteforcer le TX du device (RX du dongle)
+4/ bruteforcer le baud rate (screen /dev/ttyUSB0 <baudrate>)
+5/ bruteforcer le RX du device (TX du dongle)
+
+== My USB to UART Cable
+
+* black: ground
+* red: +5V
+* white: RX
+* green: TX
+
+=== Tools
+
+* https://code.google.com/p/baudrate/, also in src/baudrate-1.0/
+
+=== References
+
+* http://www.devttys0.com/2012/11/reverse-engineering-serial-ports/
+
+== SREC conversion
+
+to analyze srecord encoded in intel format
+
+    objcopy -I ihex -O binary <file-in> <file-out>

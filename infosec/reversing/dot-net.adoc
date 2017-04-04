@@ -1,0 +1,6 @@
+= .Net Reverse Engineering
+
+== Steps
+
+* CFF Explorer
+* Decompiler

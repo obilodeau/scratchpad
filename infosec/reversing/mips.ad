@@ -1,0 +1,145 @@
+= MIPS
+
+== Setup
+
+QEMU debian malta board: https://people.debian.org/~aurel32/qemu/mips/
+
+=== IDA Debugging
+
+Add memory regions from `/proc/$PID/maps` into IDA's manual memory regions
+
+== Registers
+
+zero            Constant 0
+at              Reserved for assembler
+v0              Expression evaluation and results of a function
+v1              Expression evaluation and results of a function
+a0, a1, a2, a3  Arguments
+t0, t1, t2, t3  Temporary (not preserved across call)
+t4, t5, t6, t7  Temporary (not preserved across call)
+s0, s1, s2, s3  Saved temporary (preserved across call)
+s4, s5, s6, s7  Saved temporary (preserved across call)
+t8, t9          Temporary (not preserved across call)
+k0, k1          Reserved for OS kernel
+gp              Pointer to global area
+sp              Stack pointer (Thread Local Storage in multithreaded code)
+fp or s8        Frame pointer
+ra              Return address (used by function call)
+
+== Calling convention
+
+First 4 args go to a0, a1, a2, a3.
+
+Additionnal arguments are visible as:
+* caller side: arg n-1 is fp+fsize, arg n-2 is fp+fsize-4, etc.
+* callee side: arg n-1 is fp+0x10, arg n-2 is fp+0x14, etc.
+
+----
+  Caller
+  ------
+  -0x?? last-stack-arg
+  -0x?? before-last-stack-arg               \
+  -0x?? local variables                     |
+  -0x?? ..                                  |
+  0x00: usually a0                          |
+  ...                                       |
+                                            |--- the tip of the caller stack
+                                            |    is actually the same memory
+  Callee                                    |    as the bottom of the callee
+  ------                                    |
+  -0x?? ..                                  |
+  0x00: usually a0                          |
+  0x04: usually a1                          |
+  0x08: usually a2                          |
+  0x0C: usually a3                          |
+  0x10: caller last-stack-arg               |
+  0x14: caller before-last-stack-arg        /
+  0x18: ...
+
+----
+
+Return register is v0.
+
+== Instructions
+
+li::        load integer (mov but with a constant)
+syscall::   perform a syscall.
+
+== Syscall
+
+syscall instruction and check $v0 value in:
+http://git.linux-mips.org/cgit/ralf/linux.git/plain/arch/mips/include/uapi/asm/unistd.h
+
+.example syscall
+----
+move    $a0, $s0
+li      $a1, 9
+li      $v0, 4037
+syscall 0    ; kill
+----
+
+== How-to work around specific problems
+
+=== Jumps to offsets of $gp which changes
+
+There's something about GCC sometimes that uses this calling convention that
+makes reverse-engineering more complex than it should be.
+
+Ex w/ some sub:
+
+    li      $gp, 0xC9554
+    addu    $gp, $t9      ; $t9 is address of current sub (0x40026C)
+    ...
+    lw      $t9, -0x7E14($gp)
+    nop
+    jalr    $t9
+
+To look up what code is jumped to you need to do the math:
+
+    >>> hex(0xc9554+0x40026c-0x7e14)
+    0x4c19ac
+
+Which is an entry in the .got. Address to the code.
+
+This is not obfuscation. The real value of $gp register IS the same for every
+functions/procedures of regular gnuc application. If you would do the:
+
+    $gp = $gp + $t9
+
+of every function you would get the same value in all the subs.
+
+Instead of calculating the "real" $gp and doing offset calculation for every
+jump you can hint IDA about what to do:
+
+The IDA has sometime problem to calculate right offsets, but there is a
+finesse how to do that. First, compute value of $gp by hand, don’t worry,
+it’ll be only once :) Next open/select menu ‘Options -> General…’ in IDA and in
+dialog ‘IDA Options’, switch to tab Analysis then in analysis tab, click on
+button ‘Processor specific analysis options’ which opens another dialog. And
+in this dialog (MIPS specific options) just insert computed value of $gp to
+combo ‘$gp value’ Close this dialog, but stay still in ‘IDA Options’ (tab
+Analysis) where you have to click on button ‘Reanalyze program’ Ant now you
+can close all dialogs(OK) and you should to see recomputed values of offsets
+in form as for example
+
+    lw   $t9, (off_4C19AC – 0x4C97C0)($gp)
+    ; where off_xxx, or sub_, or whatever is recomputed real value
+    ; of pointer to loc, sub, etc…
+
+NOTE: This is a global option. Default is 0xFFFFFFFF (only useful when $gp
+arithmetics aren't used for calls).
+
+Thanks to Rastislav Štefančík <stefancik@eset.sk> for explaining what is going
+on and providing the IDA solution.
+
+== Tools
+
+* /dev/ttyS0's IDA plugins
+* https://github.com/zcutlip/gdbinit-mips
+
+== References
+
+* Registers, https://www.doc.ic.ac.uk/lab/secondyear/spim/node10.html
+* Instructions, http://www.mrc.uidaho.edu/mrc/people/jff/digital/MIPSir.html
+* Calling convention:
+  https://courses.cs.washington.edu/courses/cse410/09sp/examples/MIPSCallingConventionsSummary.pdf

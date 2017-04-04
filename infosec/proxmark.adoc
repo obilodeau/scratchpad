@@ -1,0 +1,17 @@
+= Proxmark
+
+== hid / ict cards
+
+Read
+
+    lf hid fskdemod 1
+
+To stop reading press green button on the top of the proxmark
+
+Clone
+
+    lf hid clone 20061e4045
+
+== References
+
+* https://www.kumari.net/index.php/projects/cloning-and-hid-card

@@ -1,0 +1,8 @@
+= Linux Memory
+
+== vdso segment
+
+virtual system calls. ca remplace un syscall par du code user-space pour
+certains syscalls read-only de kernel memory
+
+* https://lwn.net/Articles/615809/

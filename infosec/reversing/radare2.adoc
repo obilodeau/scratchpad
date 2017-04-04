@@ -1,0 +1,141 @@
+= Reverse engineering embedded software using Radare2
+
+== TODO
+
+* http://radare.today/radare2-is-documented/
+
+== TL;DR
+
+r2 binary
+
+* -d: debug
+* -c=H: web ui
+* VV: ascii graph mode
+* : - get prompt
+* ?
+* <cmd>?
+
+=== r2 shell static
+
+    $ r2
+    aa          # analyze all
+    s main      # seek main
+    pd          # print disassembly
+    pdf         # print disass of function
+    pdf~call    # print disass of function | grep call
+    px (or x)   # print hex
+    axt         # xref-to
+
+=== r2 shell debugging
+
+debugger commands under the `d` space
+
+    db <sym>    # add breakpoint at <sym>
+    dc          # continue
+
+=== Visual mode
+
+Activate with V
+
+* p: rotate display modes
+
+=== Analyze position independent code
+
+* wx: load hex
+* aaa: auto-analyze all
+
+----
+$~ r2 -b 32 -
+ -- Control the signal handlers of the child process with the 'dk' command
+[0x00000000]> wx 6a0b58995266682d6389e7682f736800682f62696e89e352e8390000006563686f202222203e202f6574632f736861646f77203b206563686f202222203e202f6574632f706173737764203b20726d202d5266202f00575389e1cd80
+[0x00000000]> aaa
+[0x00000000]> pd 16
+╒ (fcn) fcn.00000000 512
+│           0x00000000      6a0b           push 0xb
+│           0x00000002      58             pop eax
+│           0x00000003      99             cdq
+│           0x00000004      52             push edx
+│           0x00000005      66682d63       push 0x632d
+│           0x00000009      89e7           mov edi, esp
+│           ; DATA XREF from 0x00000000 (fcn.00000000)
+│           0x0000000b      682f736800     push 0x68732f
+│           0x00000010      682f62696e     push 0x6e69622f
+│           0x00000015      89e3           mov ebx, esp
+│           0x00000017      52             push edx
+│           0x00000018      e839000000     call 0x56                  
+│           0x0000001d      6563686f       arpl word gs:[eax + 0x6f], bp
+│           0x00000021      2022           and byte [edx], ah
+│           0x00000023      2220           and ah, byte [eax]
+│           0x00000025      3e202f         and byte ds:[edi], ch
+│           0x00000028      657463         je 0x8e                    
+[0x00000000]> 
+----
+
+
+=== Tutorial
+
+Notes from this session:
+http://lca2015.linux.org.au/schedule/30102/view_talk?day=thursday
+
+Installation instructions:
+https://linux.conf.au/wiki/Tutorials/Reverse_engineering_embedded_software_using_Radare2
+
+by Andrew McDonnell
+
+rax2:: convert between data representations (hex, bin, strings, etc.)
+
+rabin2:: objdump style
+
+rasm2:: (dis)assembler
+
+rafind2:: binary search and edit tool. rafind2 -X -s <string> <file>
+
+radiff2:: binary diff similar to cmp. There is function matching capabilities.
+
+rahash2 (or hasher):: hashes sections of files to determine what changed
+
+ragg2:: shellcode generator, C/opcode compiler
+
+exemple: $ ragg2 -a x86 -b 32 -i exec
+
+radare2:: radare-shell
+
+? and <command>? is help
+
+pd:: print dissasembly. ex: pd 32
+
+s:: seek. ex: s +100
+
+aa:: analyse all
+
+ac:: analyse code then pdf (print disassembled function) works
+
+afl:: show information about all functions
+
+afn:: rename function
+
+ag:: graphviz to plot with xdot
+
+e??:: list config vars with description
+
+i:: information about file
+
+is:: symbols info
+
+ps:: print strings (usually ps @<addr>)
+
+fs:: detect strings
+
+f:: show detected strings
+
+V:: visual mode
+
+binwalk always use latest
+
+unsquashfs from openwrt tools
+
+sasquatch another tool to detect / extract squashfs filesystems
+
+== References
+
+* https://dustri.org/b/how-to-radare2-a-fake-openssh-exploit.html

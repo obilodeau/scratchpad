@@ -1,0 +1,10 @@
+
+dmsetup table --showkeys /dev/mapper/sda5_crypt
+0 41435136 crypt aes-xts-plain64
+c6210f4ae1b083b4cf1023e6ec6361ee71869569192b4f27468382cb0a24bb52c411650af74aac6ce8fc9dec8661d4f037fc66acf0358201323b06a26d695875
+0 8:5 4096 1 allow_discards
+
+losetup /dev/loop0 /root/flag
+cryptsetup luksOpen /dev/loop0 crypt_fun --master-key-file key.bin
+mount /dev/mapper/crypt_fun /mnt/tmp/
+cat /mnt/tmp/flag.txt

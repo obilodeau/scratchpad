@@ -1,0 +1,19 @@
+= IRC
+
+== IRC Reconnaissance
+
+    /info
+    /list
+    /lusers
+    /whois
+    /whowas
+    /quote userip
+
+Privileged
+
+    /trace
+    /stats
+
+irssi command to send raw server commands:
+
+    /quote

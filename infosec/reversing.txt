@@ -1,0 +1,94 @@
+
+Remember:
+
+* [software] breakpoints alter memory. Avoid using them in self-decrypting
+  code before code is decrypted. (http://www.nynaeve.net/?p=80)
+
+Win32 calls from python w/ ctypes, cdll and windll
+http://docs.python.org/2/library/ctypes.html
+
+== Tools
+
+* gdb
+* file
+* objdump -x
+* nm
+* radare2, http://www.radare.org/y/?p=download
+* dff (hexeditor w/ image previews)
+* c++filt: From compiled C++ strings into function prototypes (demangle symbols)
+* ExeInfoPE (packer identification, works on ELF, mach-o, etc., runs from wine)
+
+== IDA shortcuts
+
+https://github.com/radare/radare2/wiki/Migration-from-ida-or-GDB
+
+=== Specialized
+
+* .NET: ILSpy, http://ilspy.net/
+* Java: JD-GUI, http://jd.benow.ca/#jd-gui-overview
+* Flash: FFDec, http://www.free-decompiler.com/flash/download.html
+* Android: dex2jar, http://code.google.com/p/dex2jar/
+* Python 2.7: https://github.com/wibiti/uncompyle2
+* Exe unpackers: Unpacking Kit 2012, http://forum.exetools.com/showthread.php?t=13610
+
+=== Windows
+
+* Immunity Debugger - http://debugger.immunityinc.com/
+* OllyDbg - http://www.ollydbg.de/
+
+== Embedded
+
+=== Statically linked
+
+Compile statically linked dependencies and bindiff them with the binary. Mark
+library code versus application code.
+
+== Weird archs
+
+* IDA QEMU:
+https://www.hex-rays.com/products/ida/support/idadoc/1588.shtml
+
+== Perl
+
+Reverse engineer Perl compiled into binary form. Via perlcc, perl2exe, etc.
+
+Trying to add B::Deparse to PERL5OPT environment variable to force it to dump its code
+
+    export PERL5OPT=-MO=Deparse
+    ./binary
+
+=== Similar approach with gdb
+
+NOTE: I needed the same exact perl as the one the challenge was compiled with.
+      Same no thread and multi flag. I used plenv (so did the challenge).
+
+    (gdb) b perl_run
+    Breakpoint 1 at 0x80fc5ea: file perl.c, line 2350.
+    (gdb) r
+    Starting program: /home/olivier/Documents/projets/infosec/adctf2014/15/password-checker
+
+    Breakpoint 1, perl_run (my_perl=0x81d0008) at perl.c:2350
+    2350    perl.c: No such file or directory.
+    (gdb) p Perl_eval_pv (my_perl, "use B::Deparse; B::Deparse->compile->()", 1)
+
+    <CODE>
+
+I'm not sure if this dumps all subs. It might not. In this case, find coderefs through %main:: and dump them with command below:
+
+    p Perl_eval_pv (my_perl, "use B::Deparse; $deparse = B::Deparse->new(); print $deparse->coderef2text(*main::flag{CODE});", 1)
+
+Using typeglob syntax since I couldn't get the coderef (\&foo) syntax to work.
+
+And to discover code or interesting variables
+
+    p Perl_eval_pv (my_perl, "{ no strict 'refs'; foreach my $entry ( keys %main:: ) { print $entry, ' is code\n' if defined &{$entry}; } }", 1)
+    p Perl_eval_pv (my_perl, "{ no strict 'refs'; foreach my $entry ( keys %main:: ) { print $entry, ' is hash\n' if defined %{$entry}; } }", 1)
+    p Perl_eval_pv (my_perl, "{ no strict 'refs'; foreach my $entry ( keys %main:: ) { print $entry, ' is scalar\n' if defined ${$entry}; } }", 1)
+    p Perl_eval_pv (my_perl, "{ no strict 'refs'; foreach my $entry ( keys %main:: ) { print $entry, ' is array\n' if defined @{$entry}; } }", 1)
+
+.References
+* See adctf 2014 day 15
+* http://stackoverflow.com/questions/4048614/how-can-i-reverse-engineer-a-perl-program-that-has-been-compiled-with-perlcc/4048916#4048916
+* http://www.perlmonks.org/?node_id=779752
+* http://www.perlmonks.org/?node_id=981958
+* https://metacpan.org/pod/B::Deparse#USING-B::Deparse-AS-A-MODULE

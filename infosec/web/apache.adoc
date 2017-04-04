@@ -1,0 +1,6 @@
+= Apache vulns
+
+Multiview attack. By changing `Accept:` header similar files are listed by the
+server even without dir listing.
+
+See first demo of: https://www.youtube.com/watch?v=P8_V3RI1Ru4

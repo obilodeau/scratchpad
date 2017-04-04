@@ -1,0 +1,4 @@
+= Embedded device reverse engineering
+
+How to chroot into a firmware inside an emulated environment (like qemu):
+http://shadow-file.blogspot.ca/2015/01/dynamically-analyzing-wifi-routers-upnp.html

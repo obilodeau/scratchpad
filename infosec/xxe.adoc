@@ -1,0 +1,3 @@
+= Xml External Entity (XXE)
+
+Can be used to load local files or do SSRF. Quite documented online.

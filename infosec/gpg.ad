@@ -1,0 +1,21 @@
+== extend expiration on subkey
+
+    $ gpg --edit-key KEYID
+    key 1  # this picks the first subkey
+    expire
+    save
+
+== sending updated keys
+
+    gpg --send-key --keyserver keyserver.ubuntu.com YOURMASTERKEYID
+    gpg --send-key --keyserver pgp.mit.edu YOURMASTERKEYID
+    gpg --send-key --keyserver keys.gnupg.net YOURMASTERKEYID
+
+== trust + sign a key
+
+    gpg --edit-key KEYID
+    trust
+    uid X
+    sign
+
+Then send the updated keys.

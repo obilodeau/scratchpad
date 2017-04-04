@@ -1,0 +1,10 @@
+= IDA Python
+
+== Very useful
+
+ScreenEA():: Get address of what is under the cursor
+GetRegValue(name):: Get content of register name
+SetRegValue(name):: Set content of register name
+
+* Examples: http://www.openrce.org/articles/full_view/11
+* https://www.hex-rays.com/products/ida/support/idapython_docs/

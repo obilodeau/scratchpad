@@ -1,0 +1,11 @@
+= POSIX
+
+== STDIN, STDOUT, STDERR
+
+File descriptors:
+
+0   Standard input  STDIN_FILENO    stdin
+1   Standard output STDOUT_FILENO   stdout
+2   Standard error  STDERR_FILENO   stderr
+
+Also applies to Linux

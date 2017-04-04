@@ -1,0 +1,14 @@
+Via https://www.dropbox.com/s/zhn3ovhfu8mw9b5/Hakin9_OPEN_05_2013.pdf
+
+* Basic unix toolchain
+* otool: Get metadata about Mach-O binaries
+* PList viewer (plutil): Parse property list binaries files
+* nm: Display symbol table and other information
+* dumpdecrypted: Decrypts App Store binaries
+* removePIE: Disables ASLR protection on binaries
+* Cycript: Dynamically interact with the ObjC runtime
+* SSL Kill Switch: Disable SSL certificate pinning
+* Snoop-it
+* AFC file viewer: Browse the data on the phone
+* class-dump-z: Extract Objective C classes / methods definitions
+* iNalyzer / Cydia

@@ -1,0 +1,210 @@
+= gdb
+
+Next time I do anything serious with gdb on a non-x86 arch I shall try:
+https://github.com/hugsy/re-stuff/blob/master/gef.py
+
+or -tui
+
+== Addons
+
+* gdbinit
+* peda
+
+== braindump
+
+gdb with no symbols
+
+load files
+
+    disassemble 0x080488c0,0x080495bc
+
+    b *0x08048EFE
+
+    x/20i $rip
+
+si::    step instruction (steps into calls)
+
+ni::    next instruction (steps over calls)
+
+== cool things
+
+Reference for these: https://www.youtube.com/watch?v=PorfLSr3DDI
+
+tbreak:: temporary breakpoint
+
+rbreak:: reg-ex breakpoint
+
+break xxx if yyy:: conditionally break at xxx if condition yyy holds
+
+commands:: list of commands to be executed when a breakpoint is hit
+
+silent:: special command to suppress output on breakpoint hit
+
+save breakpoints:: save a list of breakpoints to a script
+
+save history:: save history of executed gdb commands
+
+call:: call a function in the inferior
+
+watch -l:: watchpoint based on address (location)
+
+rwatch:: read watchpoint
+
+info line foo.c:42:: show PC for line
+
+info line * $pc:: show line begin/end for current program counter
+
+thread apply all bt:: backtrace for every thread
+
+dprintf:: dynamic printf
+
+== Python scripting
+
+Reference for these: https://www.youtube.com/watch?v=PorfLSr3DDI
+
+* define custom commands by inheriting from gdb.Command class
+* hook events to invoke python functions using gdb.events.stop.connect
+
+== output as struct
+
+=== with symbols
+
+with `set print pretty on`
+
+    print *variable
+
+== output as array
+
+    print *array@len
+
+=== without symbols
+
+See http://stackoverflow.com/questions/7272558/can-we-define-a-new-data-type-in-a-gdb-session
+
+== Cheatsheet
+
+Adapted from http://www.securiteam.com/securityreviews/5UP0B2KCKI.html.
+
+.Attach running process
+
+    (gdb) attach <pid>
+
+.Search the memory
+
+    (gdb) x/d or x 'address' show decimal
+    (gdb) x/100s 'address' show next 100 decimals 
+    (gdb) x 0x0804846c show decimal at 0x0804846c
+    (gdb) x/s 'address' show strings at address
+    (gdb) x/105 0x0804846c show 105 strings at 0x0804846c
+    (gdb) x/x 'address' show hexadecimal address
+    (gdb) x/10x 0x0804846c show 10 addresses at 0x0804846c
+    (gdb) x/b 0x0804846c show byte at 0x0804846c
+    (gdb) x/10b 0x0804846c-10 show byte at 0x0804846c-10
+    (gdb) x/10b 0x0804846c+20 show byte at 0x0804846c+20
+    (gdb) x/20i 0x0804846c show 20 assembler instructions at address
+
+.Search shellcode or return address or something else on stack:
+
+    Breakpoint 1, 0x8048409 in main ()
+    (gdb) x/1000s 'address' // Print 1000 strings at address
+    (gdb) p $esp // Show esp register 
+    $2 = (void *) 0xbffff454
+    (gdb) x/1000s $esp // Search 1000 strings at $esp address. 
+    (gdb) x/1000s $esp-1000 // Search 1000 strings at $esp register
+        // - 1000. 
+    (gdb) x/1000s 0xbffff4b4 // Search 1000 strings at 0xbffff4b4 
+
+.List all sections of executable file:
+
+    (gdb) maintenance info sections // or mai i s
+
+    Executable file:
+        `/home/hack/homepage/challenge/buf/basic', file type elf32-i386.
+        0x080480f4->0x08048107 at 0x000000f4: .interp ALLOC LOAD READONLY DATA HAS_CONTENTS
+        0x08048108->0x08048128 at 0x00000108: .note.ABI-tag ALLOC LOAD READONLY DATA HAS_CONTENTS
+        0x08048128->0x08048158 at 0x00000128: .hash ALLOC LOAD READONLY DATA HAS_CONTENTS
+        0x08048158->0x080481c8 at 0x00000158: .dynsym ALLOC LOAD READONLY DATA HAS_CONTENTS
+        0x080481c8->0x08048242 at 0x000001c8: .dynstr ALLOC LOAD READONLY DATA HAS_CONTENTS
+        0x08048242->0x08048250 at 0x00000242: .gnu.version ALLOC LOAD READONLY DATA
+    HAS_CONTENTS
+
+
+.Assembly:
+
+    (gdb) disassemble main
+    Dump of assembler code for function main:
+    0x8048400 <main>: push %ebp
+    0x8048401 <main+1>: mov %esp,%ebp
+    0x8048403 <main+3>: sub $0x408,%esp
+    0x8048409 <main+9>: add $0xfffffff8,%esp
+    0x804840c <main+12>: mov 0xc(%ebp),%eax
+    0x804840f <main+15>: add $0x4,%eax
+    0x8048412 <main+18>: mov (%eax),%edx
+    0x8048414 <main+20>: push %edx
+    0x8048415 <main+21>: lea 0xfffffc00(%ebp),%eax
+    ...
+
+or for shellcode (make sure you are at right position):
+
+    (gdb) x/100l
+
+.Search anything in heap, bss, got, ...:
+
+    (gdb) maintenance info sections
+
+    0x08049570->0x08049588 at 0x00000570: .bss ALLOC
+    0x00000000->0x00000654 at 0x00000570: .stab READONLY HAS_CONTENTS
+    0x00000000->0x00001318 at 0x00000bc4: .stabstr READONLY HAS_CONTENTS
+    0x00000000->0x000000e4 at 0x00001edc: .comment READONLY HAS_CONTENTS
+    0x08049588->0x08049600 at 0x00001fc0: .note READONLY HAS_CONTENTS
+
+    (gdb) x/1000s 0x08049600 // print strings heap
+    (gdb) x/1000s 0x08049570 // print strings bss section
+    ...
+
+.Show registers (Very useful for stack exploits):
+
+    (gdb) info registers
+    eax 0x1 1
+    ecx 0x8048298 134513304
+    edx 0x8048400 134513664
+    ebx 0x400f6618 1074751000
+    esp 0xbffff4b4 0xbffff4b4
+    ebp 0xbffff8bc 0xbffff8bc
+    esi 0x4000aa20 1073785376
+    edi 0xbffff924 -1073743580
+    eip 0x8048409 0x8048409
+    eflags 0x286 646
+    cs 0x23 35
+    ss 0x2b 43
+    ds 0x2b 43
+    es 0x2b 43
+    fs 0x0 0
+    gs 0x0 0
+
+.Get dynamic function pointer (Useful for return into libc exploits):
+
+    Breakpoint 1, 0x8048409 in main ()
+    (gdb) p system
+    $1 = {<text variable, no debug info>} 0x40052460 <system>
+
+    (gdb) p strcpy
+    $5 = {char *(char *, char *)} 0x4006e880 <strcpy>
+
+.Backtrace the stack:
+
+    (gdb) backtrace
+    (gdb) bt
+
+    #0 0x8048476 in main ()
+    #1 0x40031a5e in __libc_start_main () at ../sysdeps/generic/libc-start.c:93
+
+.Run with arguments
+
+Either use --args
+
+    gdb --args ./level1 a b c
+
+or with run:
+
+    (gdb) run a b c

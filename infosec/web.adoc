@@ -1,0 +1,17 @@
+= Web
+
+== recon
+
+dirbuster-ng (or see blackarch's tools)
+
+.JBoss serialization problems
+
+* /invoker/JMXInvokerServlet
+
+== retire.js
+
+Identify vulnerable javascript framework
+
+== DLP / WAF bypass
+
+Use the `Range` header
