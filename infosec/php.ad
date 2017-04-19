@@ -57,6 +57,14 @@ like:
 
 Ref: https://foxglovesecurity.com/2017/02/07/type-juggling-and-php-object-injection-and-sqli-oh-my/
 
+Another popular one is empty string and non-existant array member:
+
+    php > if ($_SESSION['not_existant'] == '') echo 'pwn3d';
+    PHP Notice:  Undefined variable: array in php shell code on line 1
+    pwn3d
+
+Unset the PHP Session cookie and force a compare to empty string. Bingo
+
 
 == Deserialization bugs
 
