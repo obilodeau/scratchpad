@@ -5,3 +5,8 @@
 To make `CoCreateInstance` understable. Google the first bytes of the rclsid
 or riid and find the proper interfaces used. Cast the ppv (last parameter) to
 a pointer to the interface and let IDA do the rest.
+
+== Shellcode
+
+Use https://github.com/adamkramer/jmp2it[jmp2it] to run and debug extracted
+shell code.

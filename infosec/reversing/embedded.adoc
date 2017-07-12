@@ -2,3 +2,8 @@
 
 How to chroot into a firmware inside an emulated environment (like qemu):
 http://shadow-file.blogspot.ca/2015/01/dynamically-analyzing-wifi-routers-upnp.html
+
+== cpio extraction
+
+    cd in fs root
+    cpio -i --no-absolute-filenames < image
