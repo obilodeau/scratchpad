@@ -46,6 +46,9 @@ rescue the most difficult parts of the file. Useful for a first quick pass.
 --idirect:: Use direct I/O for input. Recommended by ddrescue tutorial. -b must be the
 good value otherwise reads will fail.
 
+Remember to use a log viewer like ddrescuelog if you want a fancy progress
+monitor.
+
 === Special case: ddrescue over the network
 
 I used sshfs + ddrescue with a reasonable 10MiB/s rate using a 100Mbps network
@@ -60,6 +63,10 @@ So basically:
     sshfs <host>:<directory> <mountpoint> -o big_writes
 
 Further optimization is possible. I haven't tried other sshfs options.
+
+=== Special case: cloning with ddrescue
+
+    ddrescue -v -f --no-scrape /dev/[baddrive] /dev/[gooddrive] /root/recovery.log
 
 === Hardware issues
 
@@ -179,6 +186,22 @@ non-destructive)
 Make sure that the filesystem is aware of the bad blocks on it. See
 `badblocks` on how to do that.
 
+== Filesystem specific tools and info
+
+=== HFS / HFS+
+
+In order for Linux to mount this filesystem, a volume header (first sector) and alternate
+volume header (last sector of partition minus 1024) must be present. When
+attempting to recover a disk, the end of the drive was corrupted and the
+alternate volume header couldn't be found.
+
+`hfsprescue` (precompiled binaries available!) can do an excellent job at
+recovery. Better than photorec. Be sure to use a recent version.
+
+https://www.plop.at/en/hfsprescue/full.html
+
+010 editor template available to parse the volume header and HFS' metadata
+
 == References
 
 * http://superuser.com/questions/528176/using-badblocks-on-modern-disks
@@ -187,3 +210,4 @@ Make sure that the filesystem is aware of the bad blocks on it. See
 * https://www.smartmontools.org/browser/trunk/www/badblockhowto.xml
 * http://www.gnu.org/software/ddrescue/manual/ddrescue_manual.html#Invoking-ddrescue
 * http://unix.stackexchange.com/questions/39113/mount-ntfs-image-file-created-using-partimage
+* https://datarecovery.com/rd/how-to-clone-hard-disks-with-ddrescue/
