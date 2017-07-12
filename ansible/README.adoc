@@ -1,0 +1,5 @@
+= README
+
+To run:
+
+    ansible-playbook <file.yml>

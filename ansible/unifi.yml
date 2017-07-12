@@ -1,0 +1,28 @@
+# edit /etc/ansible/hosts to have a [unifi] group with your server in it
+# install role with: ansible-galaxy install nephelaiio.unifi-controller
+---
+- name: Install UniFi Controller on our server
+  hosts: unifi
+  remote_user: root
+
+  roles:
+    - nephelaiio.unifi-controller
+
+  tasks:
+
+    - name: Enable firewall
+      ufw: state=enabled
+
+    - name: Allow SSH
+      ufw: rule=allow name=OpenSSH
+
+    - name: Allow UniFi Controller TCP Ports
+      ufw: rule=allow port='{{ item }}' proto=tcp
+      with_items:
+        - 8080
+        - 8443
+        - 8843
+        - 8880
+
+    - name: Allow UniFi Controller UDP Ports
+      ufw: rule=allow port=3478 proto=udp
