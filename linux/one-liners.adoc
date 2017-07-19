@@ -1,0 +1,26 @@
+= Useful one-liners
+
+== Mirror/archive a website
+
+    wget --mirror --page-requisites --adjust-extension -e robots=off --base=./ --convert-links <URL>
+
+== File copy with progress
+
+rsync can be used but by its design it uses two CPUs so avoid it on single CPU
+systems.
+
+Progress seems nice although I never tried it:
+https://github.com/Xfennec/progress
+
+pv is used in a pipe to do monitor what is going through it. It can be wrapped
+in a bigger construct:
+
+    tar c sourceDirectory | pv | tar x -C destinationDirectory
+
+or even as a fct:
+
+    cpstat () {
+        tar c "$1" | pv | tar x -C "$2"
+    }
+
+Ref: https://unix.stackexchange.com/a/65087
