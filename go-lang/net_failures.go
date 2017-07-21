@@ -1,5 +1,7 @@
 package main
 
+// Olivier Bilodeau <obilodeau@gosecure.ca>
+
 import (
 		"fmt"
 		"net"
