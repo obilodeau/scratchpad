@@ -1,0 +1,71 @@
+= IPv6
+
+Some notes on IPv6
+
+== Addressing
+
+=== Link-local
+
+`FE80::/10` is reserved for link-local addresses. They are based on the MAC
+address. THC's tool `address6` can do the conversion. It's very similar to the
+MAC but not quite
+
+=== Loopback
+
+`::1` (or `0000:0000:0000:0000:0000:0000:0000:0001`) is reserved for loopback
+
+=== Unique-Local Address
+
+This is like private addresses in IPv4.
+
+`fc00::/7` is the reserved block but the first half `fc00::/8` has not been
+defined yet.
+
+`fd00::/8` is like `192.168.0.0/16` and is defined for `/48` prefixes. The RFC
+suggests using a random 40 bit prefix for your organization, 16 bits for
+subnets (65536 of them) and a `/64` will remain for addressing per subnet.
+
+    fd00::/8
+    \- reserved unique-local address range
+    fde4:8dba:82e1::/48
+      \----------- random 40bit prefix
+    fde4:8dba:82e1:xxxx:/64
+                   \--- the 16 bits for the subnet
+
+
+== Addressing compatibility quirks
+
+=== Windows UNC Paths
+
+Althought an IPv4 address works in a UNC path like `\\192.168.1.24\C$`, for
+IPv6 it doesn't work. However, Microsoft introduced a hack. There is a special
+domain called `.ipv6.literal.net` that will translate an IPv6 written in a
+dash separated form into a valid IPv6 address after DNS resolution.
+
+    FE80-AB00--200D-617B.ipv6.literal.net
+
+Returns
+
+    fe80:ab00::200d:617b
+
+
+== OSINT
+
+On shodan, one can use the `has_ipv6:1` search modifier on any given query.
+
+
+== Attacks
+
+THC IPv6 tools
+
+alive6:: Shows alive addresses in a given segment, useful for quickly identifying potential targets in range.
+dnsrevenum6:: Performs reverse DNS lookups for IPv6 addresses, useful for if you've got an IP and you want to find the domain associated with it.
+exploit6:: Performs various CVE exploits, however, BE CAREFUL some of the exploits are unstable and could crash the host...
+firewall6:: Runs a lot of access control list(ACL) bypass attempts to check different implementations of firewalling & restrictions.
+passive_discovery6:: Passively sniffs the network and dump all client’s IPv6 addresses, very useful for internal infrastructure assessments for identifying potential IPv6 targets.
+trace6:: An implementation of traceroute for IPv6 which runs a bit quicker than traceroute6.
+
+== References
+
+* https://blog.zsec.uk/ipv6-pwn/
+* https://en.wikipedia.org/wiki/Unique_local_address
