@@ -3,3 +3,27 @@
 To run:
 
     ansible-playbook <file.yml>
+
+To run an arbitrary command on a set of dynamic hosts:
+
+    ansible -i ./digital_ocean.py mytag -a uptime
+
+This will run the `uptime` command (default module is command and -a is
+argument to module) on all digital ocean hosts (of a given API token) with the
+tag mytag.
+
+`digital_ocean.py` is a copy of the script located in the `contrib/inventory/`
+directory of the ansible main repository.
+
+
+== Debugging tips
+
+.Log all variables
+----
+- name: Display all variables/facts known for a host
+  debug:
+    var: hostvars[inventory_hostname]
+    verbosity: 4
+----
+
+You need to run the playbook with `-vvvv` to see the result.
