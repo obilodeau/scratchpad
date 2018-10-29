@@ -1,0 +1,47 @@
+= Certificate management
+
+Search keywords: SSL, TLS, certificate, CA, root
+
+== Operating System
+
+=== [Arch] Linux
+
+NOTE: `update-ca-trust` used to be called `update-ca-certificates` and might
+      still be called this way in other distros.
+
+CA Trust store is system wide. Info can be found in `update-ca-trust` man
+page.
+
+==== Add to store
+
+Convert to PEM
+
+    openssl x509 -in ~/Downloads/rootCA.crt -inform DER -outform PEM -out ~/Downloads/rootCA.pem
+
+Copy to store
+
+    sudo cp ~/Downloads/rootCA.pem /etc/ca-certificates/trust-source/anchors/
+
+Update trust
+
+    sudo update-ca-trust extract
+
+==== Remove from store
+
+    sudo rm /etc/ca-certificates/trust-source/anchors/rootCA.pem
+    sudo update-ca-trust extract
+
+
+== Chrome
+
+=== List all Certs from your local db
+
+    $ certutil -d sql:$HOME/.pki/nssdb -L
+
+=== Add a trusted CA certificate
+
+    $ certutil -d sql:$HOME/.pki/nssdb -A -t "C,," -n "NorthSec Internal Web CA" -i ca.crt
+
+=== Delete a certificate
+
+    $ certutil -d sql:$HOME/.pki/nssdb -D -n "NorthSec Internal Web CA"
