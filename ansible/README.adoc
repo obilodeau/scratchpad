@@ -27,3 +27,32 @@ directory of the ansible main repository.
 ----
 
 You need to run the playbook with `-vvvv` to see the result.
+
+== Ansible Vault
+
+In `group_vars/vars`:
+
+    ---
+    secret: "{{vault_secret}}"
+
+In `group_vars/vault`, paste the output of:
+
+    ansible-vault encrypt_string --vault-id @prompt --name 'vault_secret' 'secretstring'
+
+Which looks something like this:
+
+    vault_secret: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          35393632313339313839613639663037616135353235633964383561346136346431336665633565
+          3533623361333661636539363032313964626439316534620a303334623132376538316137313036
+          31623466393337343463323762333534666437383561633462396361353763343239393338343638
+          6262656437636430660a313064326461653961316333326166623430333633663563313863313565
+          32636663393738633431336166306261393639613135323463323538313266373665
+
+Then call your playbook with:
+
+    ansible-playbook [...] --vault-id .vaultpass ansible/mcp.yml
+
+Or use `@prompt` instead of file `.vaultpass` for interactive prompt.
+
+Ref: https://docs.ansible.com/ansible/latest/user_guide/playbooks_best_practices.html#best-practices-for-variables-and-vaults
