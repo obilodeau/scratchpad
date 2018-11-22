@@ -69,3 +69,19 @@ http://blacklist.adctf2014.katsudon.org/search?ip=\&id=%20or%201%3E2%20UNION%20S
 == OWASP Track
 
     notexists') UNION SELECT 'yolo' # 
+
+== MySQL
+
+=== Avoid quoting restrictions
+
+For MySQL, to avoid quotes you can hex-encode strings and prefix with 0x.
+For example admin is 0x61646d696e so:
+
+    user=0x61646d696e
+
+is valid SQL.
+
+=== Filter bypass
+
+For MySQL the byte `0xa0`, a non-breaking space in ISO 8859-1 and apparently
+not matched by a `\s` regex, will be considered a valid space.
