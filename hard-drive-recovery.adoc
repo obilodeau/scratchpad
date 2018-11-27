@@ -202,6 +202,39 @@ https://www.plop.at/en/hfsprescue/full.html
 
 010 editor template available to parse the volume header and HFS' metadata
 
+
+== Create an interoperable filesystem
+
+Nowadays it's complicated to get an interoperable filesystem that works across
+Windows, Linux and Mac OS X. These instructions are for a Linux system trying
+to create such a filesystem.
+
+Exfat with a specific GPT table works.
+
+Here are the commands:
+
+    gdisk /dev/sdX
+    Command (? for help): o
+    This option deletes all partitions and creates a new protective MBR.
+    Proceed? (Y/N): Y
+
+Partition type is `0700` (Microsoft basic data)
+
+    Command (? for help): n
+    Partition number (1-128, default 1):
+    ...
+    Current type is 'Linux filesystem'
+    Hex code or GUID (L to show codes, Enter = 8300): 0700
+    Changed type of partition to 'Microsoft basic data'
+
+Write partition, then format with exfat:
+
+    mkfs.exfat /dev/sdX1
+
+=== Reference
+
+* https://matthew.komputerwiz.net/2015/12/13/formatting-universal-drive.html
+
 == References
 
 * http://superuser.com/questions/528176/using-badblocks-on-modern-disks
