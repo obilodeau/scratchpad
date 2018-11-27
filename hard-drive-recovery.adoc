@@ -137,7 +137,7 @@ multiply start sector with the sector size (usually 512 or 4096)
 
 Mount using offset of partition you are interested in:
 
-    mount -o loop,offset=XXXX <image> <mountpoint>
+    mount -o ro,loop,offset=XXXX <image> <mountpoint>
 
 On some distros loop files are not automatically created. Follow instructions
 from search for partition section. Then replace `<image>` with `/dev/loop0`.
