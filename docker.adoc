@@ -60,3 +60,9 @@ Load it
     zcat cowrie-router-actiontec-v20160209.tar.gz | docker load
 
 Run it
+
+== Configuration
+
+=== Storage driver
+
+devicemapper is not a good choice. Make sure it runs something better.
