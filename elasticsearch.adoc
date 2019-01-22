@@ -1,0 +1,94 @@
+= Elastic Search stuff
+
+This covers Elastic Search and Kibana too.
+
+A lot of stuff needs to be done via Kibana's `Dev Tools` interface
+
+== Index templates
+
+An elasticsearch concept. They apply the mapping configured on index creation.
+Changing a template will not change underlying indexes. They use an
+`index_patterns` field to determine to what index they will apply. They can be
+combined.
+
+To view them all.
+
+    GET _template
+
+To create one:
+
+    PUT /_template/corona-template
+    {
+        "index_patterns" : ["corona-*"],
+        "mappings" : {
+            "_doc" : {
+                "properties" : {
+                    "@timestamp" : { "type" : "date" },
+                    "timestamp" : { "type" : "date" },
+                    "src_ip" : { "type" : "ip" },
+                    "src_location" : { "type" : "geo_point" }
+                }
+            }
+        }
+    }
+
+Doc: https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-templates.html
+
+Fluentd / logstash can also create the templates themselves: https://github.com/uken/fluent-plugin-elasticsearch#template_name
+
+== Debug ingestion that is not working
+
+Increase logging verbosity
+
+    PUT /_cluster/settings
+    {
+      "transient": {
+        "logger.org.elasticsearch": "debug"
+      }
+    }
+
+
+== Bulk reload
+
+=== one-liner using jq and curl
+
+For relatively small (few hundred megs I would say) or already splitted input.
+
+From fluentd logs:
+
+    cut -f 3- buffer.log > today.json
+    cat today.json | jq -c '{"index": {"_index": "corona-2019.01.18", "_type": "fluentd" }}, .' | curl -H "Content-Type: application/json" -XPOST localhost:9200/_bulk --data-binary @-
+
+=== script: split / awk / curl
+
+----
+#!/bin/bash
+# based on https://gist.github.com/gibrown/b039039666e387ed6b0dcefb45203420#file-index-data-sh
+#
+# Usage: ./index-data.sh <index-name> <json file>
+#
+# JSON file must contain one json document per-line
+# No error handling or logging is made here
+
+export ESINDEX="$1"   #ES index name
+JSONFILE="$2"
+
+export ESTYPE="test"     #ES document type name
+export ESHOSTPORT="localhost:9200"
+
+DOCS=`wc -l $JSONFILE | awk {'print $1'}`
+echo "Indexing $DOCS $ESTYPE documents to $ESINDEX in 5 sec"
+sleep 5
+
+echo "Prepping bulk data"
+find tmp-bulk/ -name "bulk*" -delete #cleanup
+
+awk ' {print "{\"index\":{}}"; print;}' $JSONFILE | split -a 4 -l 3000 - tmp-bulk/bulk-
+
+echo "Indexing..."
+
+# TODO: we can probably use gnu parallel instead of xargs here to maximize core usage
+find tmp-bulk/ -name "bulk*" | xargs -L1 -I 'FILE' sh -c 'curl --silent -H "'"Content-Type: application/json"'" -XPOST "http://$ESHOSTPORT/$ESINDEX/$ESTYPE/_bulk" --data-binary @FILE -o /dev/null; echo -n ".";'
+----
+
+
