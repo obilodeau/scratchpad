@@ -10,3 +10,17 @@ a pointer to the interface and let IDA do the rest.
 
 Use https://github.com/adamkramer/jmp2it[jmp2it] to run and debug extracted
 shell code.
+
+== ASLR
+
+Setting the `Relocation Stripped` flag in a PE header will have the effect of
+disabling `ASLR` which will simplify reverse-engineering by making it more
+repeatable from one execution to the next.
+
+== PE
+
+=== Verify signatures
+
+On Linux:
+
+    osslsigncode verify <file>
