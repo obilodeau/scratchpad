@@ -231,9 +231,25 @@ Write partition, then format with exfat:
 
     mkfs.exfat /dev/sdX1
 
+== Reformated with another filesystem on top
+
+Chances are that filesystem metadata from the original fileysystem is still
+readable.
+
+Instructions here: https://www.cgsecurity.org/wiki/Data_Recovery_Examples#Recovery_of_reformatted_partition
+
 === Reference
 
 * https://matthew.komputerwiz.net/2015/12/13/formatting-universal-drive.html
+
+== Compression of disk images
+
+High compression can be achieved on mostly empty filesystems. `lz4` is a very
+fast algorithm.
+
+Other options are available too but I'm not sure how portable these are yet.
+
+Ref: https://unix.stackexchange.com/questions/448217/best-compression-tool-for-full-disk-imaging-that-can-saturate-a-usb-3-connection
 
 == References
 
@@ -244,3 +260,4 @@ Write partition, then format with exfat:
 * http://www.gnu.org/software/ddrescue/manual/ddrescue_manual.html#Invoking-ddrescue
 * http://unix.stackexchange.com/questions/39113/mount-ntfs-image-file-created-using-partimage
 * https://datarecovery.com/rd/how-to-clone-hard-disks-with-ddrescue/
+* https://www.cgsecurity.org/wiki/Data_Recovery_Examples#Recovery_of_reformatted_partition
