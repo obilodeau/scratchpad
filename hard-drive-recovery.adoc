@@ -1,8 +1,13 @@
 = Hard drive recovery
 :toc:
 
-Used to be a big fan of Spinrite but it's just too slow now. Looking for
-advice, I found these tips:
+Over the years, I developed an interest in recovering data from hard-drives,
+USB sticks, SSDs and filesystems. These are my notes related to that. Note
+that all this comes with NO WARRANTIES OR GUARANTEES. Be careful, always work
+on a copy never on the original medium (where this makes sense).
+
+It all started with: I used to be a big fan of Spinrite but it's just too slow
+now. Looking for advice, I found these tips:
 
 == Recovery
 
@@ -68,7 +73,11 @@ Further optimization is possible. I haven't tried other sshfs options.
 
     ddrescue -v -f --no-scrape /dev/[baddrive] /dev/[gooddrive] /root/recovery.log
 
-=== Hardware issues
+=== Using ddrescue to restore
+
+    ddrescue -f source.img /dev/[newdrive] restore.logfile
+
+== Hardware issues
 
 If BIOS doesn't detect the drive or the motor doesn't spin, it doesn't look
 good. Rubber hammer freezer trick.
@@ -142,6 +151,34 @@ Mount using offset of partition you are interested in:
 On some distros loop files are not automatically created. Follow instructions
 from search for partition section. Then replace `<image>` with `/dev/loop0`.
 
+=== Damaged filesystem
+
+Did ddrescue routine documented above. Only a few blocks damaged but at the
+beginning of the disk so the ext4 partition was unmountable.
+
+Found https://unix.stackexchange.com/questions/114429/short-read-while-trying-to-open-partition[many interesting things here].
+However nothing worked.
+All superblocks would fail even backup ones which is weird since they probably happened in disk area that were not considered damaged by ddrescue.
+
+Testdisk would fail on the real device but it would work on the ddrescue image.
+I recovered some critical files here. Incredible.
+
+Attempting to mount the image cleanly with (offset found with technique above):
+
+    mount -o ro,loop,offset=XXX <image> <mountpoint>
+
+Results in a complain that filesystem requires a repair and is read-only.
+Loop mount to access underlying partition device files (documented below):
+
+    losetup -f --show --partscan <image>
+
+Then use testdisk to find alternate superblocks. Under advanced filesystem
+options. Run the command it instructs you to run:
+
+    fsck.ext4 -b <superblock> -B <blocksize> /dev/loop0p1
+
+Then the filesystem became mountable. Yay!
+
 
 === Search for partitions and filesystems
 
@@ -149,7 +186,9 @@ from search for partition section. Then replace `<image>` with `/dev/loop0`.
 
 Mount image as loopback device and check with cfdisk:
 
-    losetup -f --show <image>
+    losetup -f --show --partscan <image>
+
+If partition table is corrupt or not present you can omit `--partscan`.
 
 Will output created loopback device then:
 
@@ -202,6 +241,40 @@ https://www.plop.at/en/hfsprescue/full.html
 
 010 editor template available to parse the volume header and HFS' metadata
 
+=== fatx (Xbox, Xbox360)
+
+Tools
+
+* fatxplorer (Windows-only, some features need a license)
+* fatx (no longer compiles on arch)
+
+==== Xbox 360 specific
+
+Information on Xbox hardware disks seems to be used in the cryptographic
+protection of the disks' content. What is used is tied with low-level
+information on the drive itself that is hard to replace without firmware-level
+tampering knowledge. This means that it is easier to transfer save games using
+a filesystem-aware tool rather than dd an entire Xbox360 drive into a new one.
+
+That said, there is a lot of crypto involved in there so corruption can occur
+easily. The crypto seems to be signed by keys that can include console keys,
+Xbox LIVE keys, etc. Most of the stuff I was interested with (savegames to
+recover) was signed by my console keys luckily. Since I wasn't swapping
+consoles only disks, it seemed like I could do it.
+
+So here's what worked (tried many things with fatx but they all failed):
+
+* ddrescue of the dying drive
+* restored image in working drive
+* Using fatxplorer in a Windows VM with USB passthrough, I extracted content I
+  wanted to keep
+* Bought new Xbox drive
+* First, got it working with my console, imported profile from Xbox LIVE, etc.
+* Then with fatxplorer, I restored the files I backed up earlier
+
+Side note: There are some tutorials and files out there to bring back to life
+the original Xbox backwards compatibility even on a 3rd party drive.
+
 
 == Create an interoperable filesystem
 
@@ -237,6 +310,16 @@ Chances are that filesystem metadata from the original fileysystem is still
 readable.
 
 Instructions here: https://www.cgsecurity.org/wiki/Data_Recovery_Examples#Recovery_of_reformatted_partition
+
+== Partition table changes on block devices
+
+Remember to run `partprobe` when you change partition tables to have Linux
+rescan the tables and expose partition block devices. For example:
+
+    partprobe /dev/sdb
+
+Will create `/dev/sdb1` if it exists after a disk restore.
+
 
 === Reference
 
