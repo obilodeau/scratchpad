@@ -43,7 +43,7 @@ Second pass:
 
     ddrescue -v --sector-size=4096 --sparse --idirect --retry-passes=3 /dev/... file mapfile
 
--b // --sector-size:: make sure to get this right!
+-b // --sector-size:: make sure to get this right! With: `fdisk -l <device>`
 
 -n // --no-scrape:: Skip the scraping phase. Avoids spending a lot of time trying to
 rescue the most difficult parts of the file. Useful for a first quick pass.
